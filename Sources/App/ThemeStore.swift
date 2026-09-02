@@ -26,6 +26,12 @@ final class ThemeStore: ObservableObject {
     }
 
     var available: [Theme] { Theme.builtins }
+
+    /// Label for the toolbar tooltip; names the resolved theme when following
+    /// the system so the dot's colour is always explained.
+    var displayName: String {
+        selectedID == Self.autoID ? "Follow System (\(current.name))" : current.name
+    }
 }
 
 extension NSAppearance {

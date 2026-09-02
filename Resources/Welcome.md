@@ -12,8 +12,8 @@ your files.
 > This document is the built-in welcome page. Press ⌘O to open a file of your own.
 
 > [!TIP]
-> Switch themes from the **Theme** menu. GitHub Dark, GitHub Light and Dracula
-> ship today; more land with the settings pane.
+> Click the coloured dot in the toolbar to switch themes. Nine ship today, and
+> the dot always wears the current theme's accent colour.
 
 > [!WARNING]
 > Diagrams and syntax highlighting are not wired up yet — see the roadmap below.
@@ -43,7 +43,7 @@ is the sort of thing that quietly breaks in naive renderers.
 
 - [x] Parse Markdown into blocks
 - [x] Theme token system
-- [x] GitHub Dark
+- [x] GitHub Dark and eight more themes
 - [ ] Syntax highlighting
 - [ ] Mermaid diagrams
 
@@ -52,7 +52,7 @@ is the sort of thing that quietly breaks in naive renderers.
 | Feature | Status | Phase |
 |:--------|:------:|------:|
 | Block parsing | Done | 1 |
-| GitHub Dark | Done | 2 |
+| Themes (9) | Done | 2 |
 | Highlighting | Pending | 3 |
 | Diagrams | Pending | 4 |
 | Search & TOC | Pending | 5 |

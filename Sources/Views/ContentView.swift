@@ -22,6 +22,11 @@ struct ContentView: View {
             }
         }
         .navigationTitle(document.title)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                ThemePickerButton()
+            }
+        }
         .onDrop(of: [.fileURL], isTargeted: nil) { providers in
             loadDrop(providers)
         }
