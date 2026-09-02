@@ -1,0 +1,72 @@
+name: ReadmeLens
+options:
+  bundleIdPrefix: io.dhruvex
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+packages:
+  Markdown:
+    url: https://github.com/apple/swift-markdown
+    from: 0.5.0
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    SWIFT_STRICT_CONCURRENCY: minimal
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ARCHS: "$(ARCHS_STANDARD)"
+    DEAD_CODE_STRIPPING: YES
+    ENABLE_HARDENED_RUNTIME: YES
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  ReadmeLens:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources
+      - path: Resources/Assets.xcassets
+      - path: Resources/Welcome.md
+    dependencies:
+      - package: Markdown
+        product: Markdown
+    settings:
+      base:
+        PRODUCT_NAME: ReadmeLens
+        PRODUCT_BUNDLE_IDENTIFIER: io.dhruvex.readmelens
+        INFOPLIST_FILE: Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Resources/ReadmeLens.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        COMBINE_HIDPI_IMAGES: YES
+        ENABLE_APP_SANDBOX: YES
+
+  ReadmeLensTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: ReadmeLens
+      - package: Markdown
+        product: Markdown
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: io.dhruvex.readmelens.tests
+
+schemes:
+  ReadmeLens:
+    build:
+      targets:
+        ReadmeLens: all
+        ReadmeLensTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - ReadmeLensTests
