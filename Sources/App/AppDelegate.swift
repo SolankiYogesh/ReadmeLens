@@ -12,6 +12,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Files handed over before the model existed.
     @MainActor private static var queued: [URL] = []
 
+    /// Finder may deliver a multi-file selection as several separate open
+    /// events rather than one. Without coalescing, each would replace the
+    /// trail and only the last file would survive.
+    @MainActor private static var batch: [URL] = []
+    @MainActor private static var batchTask: Task<Void, Never>?
+    /// Finder can be slow to deliver a large selection, so the window is
+    /// generous; the cost of waiting is a fraction of a second.
+    private static let batchWindow: UInt64 = 700_000_000
+    /// A batch arriving soon after the previous one is treated as part of the
+    /// same selection and extends the trail rather than replacing it.
+    private static let continuationWindow: TimeInterval = 3
+    @MainActor private static var lastOpenedAt: Date?
+
     /// Invoked for File ▸ Print. AppKit sends `print:` down the responder
     /// chain; if nothing implements it, macOS shows its own "does not support
     /// printing" alert, which is what happens if this is left to SwiftUI's
@@ -19,17 +32,40 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @MainActor static var printHandler: (() -> Void)?
 
     func application(_ application: NSApplication, open urls: [URL]) {
-        // Selecting several files in Finder and pressing Return delivers them
-        // all at once; they become one trail rather than only the first
-        // being opened and the rest discarded.
         let files = urls.filter { !$0.hasDirectoryPath }
         guard !files.isEmpty else { return }
-        Task { @MainActor in
-            if let document = Self.document {
-                document.open(files)
-            } else {
-                Self.queued.append(contentsOf: files)
+        Task { @MainActor in Self.enqueue(files) }
+    }
+
+    /// Gathers everything that arrives within a short window into one trail.
+    @MainActor
+    private static func enqueue(_ files: [URL]) {
+        batch.append(contentsOf: files)
+        batchTask?.cancel()
+        batchTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: batchWindow)
+            guard !Task.isCancelled else { return }
+
+            let collected = batch
+            batch = []
+            guard !collected.isEmpty else { return }
+
+            guard let document else {
+                queued.append(contentsOf: collected)
+                return
             }
+
+            let isContinuation = lastOpenedAt.map {
+                Date().timeIntervalSince($0) < continuationWindow
+            } ?? false
+
+            if isContinuation {
+                document.append(collected)
+            } else {
+                document.open(collected)
+            }
+            lastOpenedAt = Date()
+            NSApp.activate(ignoringOtherApps: true)
         }
     }
 

@@ -126,8 +126,12 @@ contains it, since nested content is not addressable on its own.
 ## Several documents at once
 
 Select a handful of `.md` files in Finder and open them together, drop them on
-the window, or pick several in `⌘O`. They become one trail, and the toolbar
-arrows walk it — with a **2 of 5** counter so you know where you are.
+the window, or pick several in `⌘O`. They open in **one window** as a single
+trail, and the toolbar arrows walk it — with a **2 of 5** counter so you know
+where you are.
+
+Finder sometimes delivers a multi-file selection as one event and sometimes as
+several in quick succession; both end up as the same single trail.
 
 Following a link inside a document appends to the same trail, so the arrows
 always mean one thing rather than being link-only history that stays disabled

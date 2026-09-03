@@ -177,6 +177,51 @@ final class NavigationTests: XCTestCase {
         XCTAssertEqual(model.url?.lastPathComponent, "a.md")
     }
 
+    /// Finder can deliver one selection as several open events; the later
+    /// ones must extend the trail rather than replace it.
+    func testAppendExtendsTheTrailWithoutMovingTheReader() throws {
+        let a = try write("# A", to: "a.md")
+        let b = try write("# B", to: "b.md")
+        let c = try write("# C", to: "c.md")
+
+        let model = DocumentModel()
+        model.open([a])
+        model.goForward()                       // nothing to do; still on a
+        model.append([b, c])
+
+        XCTAssertEqual(model.trailPosition, "1 of 3")
+        XCTAssertEqual(model.url?.lastPathComponent, "a.md")
+        XCTAssertTrue(model.canGoForward)
+        XCTAssertEqual(model.trail.map(\.lastPathComponent), ["a.md", "b.md", "c.md"])
+    }
+
+    func testAppendIgnoresDocumentsAlreadyInTheTrail() throws {
+        let a = try write("# A", to: "a.md")
+        let b = try write("# B", to: "b.md")
+
+        let model = DocumentModel()
+        model.open([a, b])
+        model.append([a, b])
+        XCTAssertEqual(model.trail.count, 2)
+    }
+
+    func testAppendOnAnEmptyTrailOpensInstead() throws {
+        let a = try write("# A", to: "a.md")
+        let model = DocumentModel()
+        model.append([a])
+        XCTAssertEqual(model.url?.lastPathComponent, "a.md")
+        XCTAssertEqual(model.trail.count, 1)
+    }
+
+    func testAppendFiltersNonMarkdown() throws {
+        let a = try write("# A", to: "a.md")
+        let junk = try write("x", to: "thing.png")
+        let model = DocumentModel()
+        model.open([a])
+        model.append([junk])
+        XCTAssertEqual(model.trail.map(\.lastPathComponent), ["a.md"])
+    }
+
     func testSingleDocumentShowsNoPositionIndicator() throws {
         let a = try write("# A", to: "a.md")
         let model = DocumentModel()

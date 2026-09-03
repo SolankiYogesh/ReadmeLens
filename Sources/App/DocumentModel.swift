@@ -139,6 +139,25 @@ final class DocumentModel: ObservableObject {
         load(url)
     }
 
+    /// Adds documents to the end of the current trail, keeping the reader
+    /// where they are.
+    ///
+    /// Used when a multi-file selection reaches the app as several separate
+    /// open events: the later ones must extend the set rather than replace it.
+    func append(_ urls: [URL]) {
+        let files = urls.filter {
+            Self.markdownExtensions.contains($0.pathExtension.lowercased())
+        }
+        let additions = files.filter { !trail.contains($0) }
+        guard !additions.isEmpty else { return }
+
+        guard !trail.isEmpty else {
+            open(files)
+            return
+        }
+        trail.append(contentsOf: additions)
+    }
+
     /// Opens several documents as one trail — selecting a folder of notes in
     /// Finder and hitting Return lands here.
     func open(_ urls: [URL]) {

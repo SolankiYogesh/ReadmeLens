@@ -11,7 +11,11 @@ struct ReadmeLensApp: App {
     @StateObject private var defaultApp = DefaultAppCoordinator()
 
     var body: some Scene {
-        WindowGroup {
+        // A single Window, not a WindowGroup. A group creates one window per
+        // open request, so opening six files produced six windows — all of
+        // them showing the same document, because they share one model, and
+        // all changing together when an arrow was clicked.
+        Window("ReadmeLens", id: "main") {
             ContentView()
                 .environmentObject(document)
                 .environmentObject(themeStore)
