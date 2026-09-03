@@ -8,6 +8,7 @@ import SwiftUI
 struct MarkdownTableView: View {
     let model: TableModel
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
 
     private var columnCount: Int {
         max(model.header.count, model.rows.map(\.count).max() ?? 0)
@@ -56,7 +57,7 @@ struct MarkdownTableView: View {
     private func cell(_ inline: InlineText, column: Int, isHeader: Bool) -> some View {
         StyledText(
             inline: inline,
-            size: Typography.body * 0.95,
+            size: typography.body * 0.95,
             weight: isHeader ? .semibold : .regular
         )
         .padding(.horizontal, 13)

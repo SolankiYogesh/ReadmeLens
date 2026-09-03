@@ -80,6 +80,22 @@ It follows your system appearance rather than the theme chosen here: an
 extension runs in its own sandbox container and cannot read the app's
 preferences.
 
+## Making it yours
+
+<kbd>⌘,</kbd> opens Settings: pick a theme, set body and code sizes, choose the
+column width, and turn on reading mode for a narrower measure.
+
+<kbd>⌘+</kbd> and <kbd>⌘−</kbd> zoom, <kbd>⌘0</kbd> returns to actual size.
+
+Drop a `.json` file into the themes folder — Settings ▸ Themes shows where —
+and it appears in the picker straight away. **Export Current Theme as JSON**
+gives you a complete file to edit. A theme that fails to load is reported by
+name, field and value rather than being ignored.
+
+<kbd>⌘P</kbd> prints, and the print panel's **PDF ▸ Save as PDF** is how you get
+a PDF. The print system does the writing, so this app still never needs
+permission to write anything.
+
 ## Formatting
 
 Text can be **bold**, *italic*, ***both at once***, ~~struck through~~, or
@@ -112,7 +128,8 @@ is the sort of thing that quietly breaks in naive renderers.
 - [x] Auto-reload on save
 - [x] Table of contents & search
 - [x] Quick Look preview
-- [ ] Settings window & custom themes
+- [x] Settings window & custom themes
+- [x] Printing and PDF
 - [ ] Mermaid diagrams
 
 ## Tables
@@ -127,6 +144,8 @@ is the sort of thing that quietly breaks in naive renderers.
 | Auto-reload | Done | 6 |
 | Outline & search | Done | 7 |
 | Quick Look | Done | 8 |
+| Settings & custom themes | Done | 9 |
+| Printing & PDF | Done | 10 |
 | Search & TOC | Pending | 7 |
 
 ## Code
@@ -180,8 +199,9 @@ than guessing.
 
 ## Roadmap
 
-Next up is a settings window with typography controls and custom themes loaded
-from disk, then PDF export.
+Every planned phase is done. What is left is the deliberately deferred: Mermaid
+diagrams, which appeared in none of the 18 real READMEs measured, and LaTeX
+maths.
 
 ---
 

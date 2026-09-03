@@ -20,10 +20,12 @@ private struct HTMLInlineStyle {
 struct HTMLInlineRun: View {
     let nodes: [HTMLNode]
     var alignment: HTMLAlignment?
-    var size: CGFloat = Typography.body
+    var size: CGFloat?
     var weight: Font.Weight = .regular
 
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
+
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var document: DocumentModel
 
@@ -119,7 +121,7 @@ struct HTMLInlineRun: View {
 
     private func run(_ text: String, style: HTMLInlineStyle) -> AttributedString {
         var piece = AttributedString(text)
-        let pointSize = size * style.scale
+        let pointSize = (size ?? typography.body) * style.scale
         var font: Font = style.code
             ? .system(size: pointSize * 0.9, weight: weight, design: .monospaced)
             : .system(size: pointSize, weight: weight)
@@ -237,6 +239,7 @@ struct HTMLListView: View {
     var alignment: HTMLAlignment?
 
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
 
     private var items: [HTMLElement] {
         element.children.compactMap {
@@ -250,7 +253,7 @@ struct HTMLListView: View {
             ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(element.tag == "ol" ? "\(index + 1)." : "•")
-                        .font(.system(size: Typography.body))
+                        .font(.system(size: typography.body))
                         .foregroundStyle(theme.fgMuted)
                         .frame(minWidth: 18, alignment: .trailing)
                     HTMLNodesView(nodes: item.children, alignment: alignment)
@@ -267,6 +270,7 @@ struct HTMLDetailsView: View {
     var alignment: HTMLAlignment?
 
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
     @State private var isExpanded: Bool = false
 
     private var summary: [HTMLNode] {
@@ -312,6 +316,7 @@ struct HTMLDetailsView: View {
 struct HTMLTableView: View {
     let element: HTMLElement
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
 
     private var rows: [[HTMLElement]] {
         var out: [[HTMLElement]] = []

@@ -6,11 +6,12 @@ import SwiftUI
 /// change is a cheap re-render.
 struct StyledText: View {
     let inline: InlineText
-    var size: CGFloat = Typography.body
+    var size: CGFloat?
     var weight: Font.Weight = .regular
     var color: Color?
 
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
     @EnvironmentObject private var search: SearchModel
     @Environment(\.searchBlockID) private var blockID
     @EnvironmentObject private var document: DocumentModel
@@ -54,6 +55,8 @@ struct StyledText: View {
         return match.range
     }
 
+    private var resolvedSize: CGFloat { size ?? typography.body }
+
     private func render(
         _ span: InlineSpan, highlight: HighlightSplitter.Segment? = nil
     ) -> AttributedString {
@@ -61,8 +64,8 @@ struct StyledText: View {
         let isCode = span.style.contains(.code)
 
         var font: Font = isCode
-            ? .system(size: size * 0.9, weight: weight, design: .monospaced)
-            : .system(size: size, weight: weight)
+            ? .system(size: resolvedSize * 0.9, weight: weight, design: .monospaced)
+            : .system(size: resolvedSize, weight: weight)
         if span.style.contains(.bold)   { font = font.bold() }
         if span.style.contains(.italic) { font = font.italic() }
         piece.font = font
@@ -88,22 +91,5 @@ struct StyledText: View {
             piece.link = url
         }
         return piece
-    }
-}
-
-enum Typography {
-    static let body: CGFloat = 15
-    static let code: CGFloat = 13
-    static let contentMaxWidth: CGFloat = 1012   // GitHub's own reading measure
-
-    static func headingSize(_ level: Int) -> CGFloat {
-        switch level {
-        case 1:  return 30
-        case 2:  return 23
-        case 3:  return 19
-        case 4:  return 16
-        case 5:  return 14
-        default: return 13
-        }
     }
 }

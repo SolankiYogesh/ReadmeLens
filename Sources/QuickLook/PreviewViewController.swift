@@ -62,6 +62,7 @@ struct QuickLookPreview: View {
     let theme: Theme
 
     @EnvironmentObject private var document: DocumentModel
+    @Environment(\.typography) private var typography
 
     var body: some View {
         ScrollView {
@@ -72,7 +73,7 @@ struct QuickLookPreview: View {
             }
             .padding(.horizontal, 28)
             .padding(.vertical, 24)
-            .frame(maxWidth: Typography.contentMaxWidth, alignment: .leading)
+            .frame(maxWidth: typography.contentMaxWidth, alignment: .leading)
             .frame(maxWidth: .infinity, alignment: .center)
         }
         .background(theme.canvas)

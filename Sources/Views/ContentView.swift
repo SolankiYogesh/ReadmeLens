@@ -5,6 +5,7 @@ struct ContentView: View {
     @EnvironmentObject private var document: DocumentModel
     @EnvironmentObject private var search: SearchModel
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
 
     var body: some View {
         ZStack {
@@ -151,6 +152,7 @@ struct ContentView: View {
 struct FolderAccessBanner: View {
     @EnvironmentObject private var document: DocumentModel
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
 
     private var folderName: String {
         document.baseDirectory?.lastPathComponent ?? "this folder"
@@ -229,6 +231,7 @@ struct DocumentScrollView: View {
     @EnvironmentObject private var document: DocumentModel
     @EnvironmentObject private var search: SearchModel
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
 
     private static let space = "document"
 
@@ -253,7 +256,7 @@ struct DocumentScrollView: View {
                 }
                 .padding(.horizontal, 32)
                 .padding(.vertical, 28)
-                .frame(maxWidth: Typography.contentMaxWidth, alignment: .leading)
+                .frame(maxWidth: typography.contentMaxWidth, alignment: .leading)
                 .frame(maxWidth: .infinity, alignment: .center)
             }
             .coordinateSpace(name: Self.space)
@@ -308,6 +311,7 @@ struct MessageView: View {
     let detail: String
 
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
 
     var body: some View {
         VStack(spacing: 10) {

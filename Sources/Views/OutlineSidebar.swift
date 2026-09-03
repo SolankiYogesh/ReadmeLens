@@ -4,6 +4,7 @@ import SwiftUI
 struct OutlineSidebar: View {
     @EnvironmentObject private var document: DocumentModel
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
 
     private var depths: [String: Int] { document.outline.indentationDepths }
     private var activeID: String? { document.activeOutlineID }
@@ -53,6 +54,7 @@ private struct OutlineRow: View {
     let action: () -> Void
 
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
     @State private var isHovering = false
 
     var body: some View {

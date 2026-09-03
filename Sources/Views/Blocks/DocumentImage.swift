@@ -36,6 +36,7 @@ struct DocumentImage: View {
 
     @EnvironmentObject private var document: DocumentModel
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
 
     @State private var image: NSImage?
     @State private var failed = false
@@ -75,7 +76,7 @@ struct DocumentImage: View {
         HStack(spacing: 6) {
             Image(systemName: failed ? "photo.badge.exclamationmark" : "photo")
             Text(alt.isEmpty ? (source as NSString).lastPathComponent : alt)
-                .font(.system(size: Typography.body * 0.85))
+                .font(.system(size: typography.body * 0.85))
                 .lineLimit(1)
         }
         .foregroundStyle(theme.fgSubtle)

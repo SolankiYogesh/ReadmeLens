@@ -28,12 +28,16 @@ Most Markdown previewers either ship a whole browser engine or render something
 that looks nothing like GitHub. ReadmeLens is a small native app that does one
 job properly.
 
-> **Read-only by design.** ReadmeLens opens and renders files. It has no editor,
-> no save path, and no write entitlement — it *cannot* modify your files.
+> **Read-only by design.** ReadmeLens opens and renders files. It has no editor
+> and no write entitlement — it *cannot* modify your files. Even PDF export goes
+> through the system print panel, so the print system does the writing, not the
+> app.
 
 - **Native and small.** SwiftUI + AppKit, a ~5 MB app, instant cold start.
 - **GitHub-accurate.** Alerts, task lists, table alignment, heading rules — and
   the raw HTML that four out of five real READMEs depend on.
+- **Yours to adjust.** Type sizes, column width, zoom, reading mode, and custom
+  themes loaded from a folder.
 - **Quick Look.** Press Space on any `.md` in Finder and it renders there,
   without launching the app.
 - **Outline and search.** A heading sidebar that tracks where you are, and
@@ -43,6 +47,44 @@ job properly.
 - **Syntax highlighting** for ~20 languages, coloured by the active theme.
 - **Nine themes**, switchable from a single dot in the toolbar.
 - **Private.** No network calls, no analytics, no telemetry.
+
+## Settings and custom themes
+
+`⌘,` opens Settings: theme, body and code sizes, column width, zoom and reading
+mode, with a live preview of the type.
+
+Custom themes are JSON files in a folder the Settings pane will reveal. Drop one
+in and it appears in the picker immediately — the folder is watched. **Export
+Current Theme as JSON** writes a complete file to edit from, and a theme that
+fails to load is reported by file, field and value rather than silently ignored.
+
+A minimal theme needs only five keys; everything else is derived:
+
+```json
+{
+  "id": "midnight",
+  "name": "Midnight",
+  "appearance": "dark",
+  "canvas": "#0A0E14",
+  "foreground": "#B3B1AD",
+  "accent": "#39BAE6"
+}
+```
+
+A complete example is in [docs/example-theme.json](docs/example-theme.json).
+
+## Printing and PDF
+
+`⌘P` prints. The print panel's **PDF ▸ Save as PDF** is how you get a PDF file —
+routing it that way means the print system does the writing and the app keeps
+its read-only sandbox.
+
+Dark themes print on a light ground; printing a dark canvas wastes ink and reads
+badly on paper.
+
+One known limitation: pages are sliced at a fixed height, so a line of text can
+be cut across a page break. Making pagination block-aware is the fix, and it is
+not done.
 
 ## Quick Look
 
@@ -170,6 +212,10 @@ swift Tools/GenerateAppIcon.swift Resources/Assets.xcassets/AppIcon.appiconset
 | Jump to a heading | Click any `#anchor` link |
 | Find in document | `⌘F`, then `⌘G` / `⇧⌘G` to step through matches |
 | Toggle the outline | `⌥⌘S` |
+| Settings | `⌘,` |
+| Zoom | `⌘+` / `⌘−` / `⌘0` |
+| Reading mode | `⌥⌘R` |
+| Print, or save a PDF | `⌘P`, then **PDF ▸ Save as PDF** |
 | Reload on save | Automatic — toggle with `⇧⌘R` |
 | Switch theme | Click the dot in the toolbar |
 | Copy a code block | Hover it, then click the copy button |
@@ -237,8 +283,12 @@ baseline; inside an HTML block they shift correctly.
 | 6 | Auto-reload on save | ✅ Done |
 | 7 | Table-of-contents sidebar, in-document search | ✅ Done |
 | 8 | Quick Look extension — preview `.md` from Finder | ✅ Done |
-| 9 | Settings window, custom themes from disk | ⏳ Next |
-| 10 | Export to PDF, zoom, reading mode | ⏳ Planned |
+| 9 | Settings window, custom themes from disk | ✅ Done |
+| 10 | Printing and PDF, zoom, reading mode | ✅ Done |
+
+Every planned phase is complete. Deliberately deferred: **Mermaid diagrams** and
+**LaTeX maths** — measuring 18 real READMEs found neither in any of them, so
+they lost to work that affected most documents.
 
 Mermaid and LaTeX were originally scheduled early; measuring the corpus showed
 **neither appears in any of the 18 READMEs sampled**, so they were demoted below
@@ -289,9 +339,6 @@ git push origin v0.2.0
 ```
 
 ## Credits
-
-Inspired by [QuickMD](https://github.com/b451c/quickmd). ReadmeLens is an
-independent implementation, not a fork.
 
 Theme palettes follow the published colour schemes of
 [GitHub Primer](https://primer.style/),

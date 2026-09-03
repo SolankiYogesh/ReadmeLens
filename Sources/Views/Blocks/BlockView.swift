@@ -4,6 +4,7 @@ import SwiftUI
 struct BlockView: View {
     let block: RenderBlock
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
     @Environment(\.blockAlignment) private var alignment
 
     private var frameAlignment: Alignment {
@@ -98,6 +99,7 @@ struct HeadingView: View {
     let anchor: String
 
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
     @Environment(\.blockAlignment) private var alignment
 
     var body: some View {
@@ -106,7 +108,7 @@ struct HeadingView: View {
                spacing: 6) {
             StyledText(
                 inline: text,
-                size: Typography.headingSize(level),
+                size: typography.headingSize(level),
                 weight: .semibold,
                 color: level >= 6 ? theme.fgMuted : theme.fg
             )
@@ -133,6 +135,7 @@ struct QuoteView: View {
     let depth: Int
 
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
 
     var body: some View {
         HStack(alignment: .top, spacing: 0) {
@@ -156,6 +159,7 @@ struct AlertView: View {
     let blocks: [RenderBlock]
 
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
 
     private var accent: Color { theme.alertColor(kind) }
 
@@ -165,7 +169,7 @@ struct AlertView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Label {
                     Text(kind.title)
-                        .font(.system(size: Typography.body, weight: .semibold))
+                        .font(.system(size: typography.body, weight: .semibold))
                 } icon: {
                     Image(systemName: kind.systemImage)
                 }
@@ -184,6 +188,7 @@ struct AlertView: View {
 struct ListView: View {
     let model: ListModel
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
 
     var body: some View {
         VStack(alignment: .leading, spacing: model.isTight ? 4 : 12) {
@@ -205,15 +210,15 @@ struct ListView: View {
         if let checked = item.checked {
             Image(systemName: checked ? "checkmark.square.fill" : "square")
                 .foregroundStyle(checked ? theme.link : theme.fgMuted)
-                .font(.system(size: Typography.body * 0.95))
+                .font(.system(size: typography.body * 0.95))
         } else if model.isOrdered {
             Text("\(model.start + index).")
-                .font(.system(size: Typography.body))
+                .font(.system(size: typography.body))
                 .foregroundStyle(theme.fgMuted)
                 .monospacedDigit()
         } else {
             Text("•")
-                .font(.system(size: Typography.body))
+                .font(.system(size: typography.body))
                 .foregroundStyle(theme.fgMuted)
         }
     }
@@ -239,6 +244,7 @@ struct DisclosureBlockView: View {
     let blocks: [RenderBlock]
 
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
     @State private var isExpanded = false
 
     var body: some View {

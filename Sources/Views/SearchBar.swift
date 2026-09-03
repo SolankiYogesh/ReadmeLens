@@ -4,6 +4,7 @@ import SwiftUI
 struct SearchBar: View {
     @ObservedObject var search: SearchModel
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
     @FocusState private var isFocused: Bool
 
     private func focusSoon() {

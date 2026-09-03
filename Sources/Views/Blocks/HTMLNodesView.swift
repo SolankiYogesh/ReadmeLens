@@ -10,6 +10,8 @@ struct HTMLNodesView: View {
     var alignment: HTMLAlignment?
 
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
+
 
     private static let inlineTags: Set<String> = [
         "a", "b", "strong", "i", "em", "code", "kbd", "sub", "sup", "span",
@@ -109,7 +111,7 @@ struct HTMLNodesView: View {
                 HTMLInlineRun(
                     nodes: element.children,
                     alignment: inherited,
-                    size: Typography.headingSize(level),
+                    size: typography.headingSize(level),
                     weight: .semibold
                 )
                 if level <= 2 {

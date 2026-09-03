@@ -12,6 +12,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Files handed over before the model existed.
     @MainActor private static var queued: [URL] = []
 
+    /// Invoked for File ▸ Print. AppKit sends `print:` down the responder
+    /// chain; if nothing implements it, macOS shows its own "does not support
+    /// printing" alert, which is what happens if this is left to SwiftUI's
+    /// command placements alone.
+    @MainActor static var printHandler: (() -> Void)?
+
     func application(_ application: NSApplication, open urls: [URL]) {
         guard let url = urls.first(where: { !$0.hasDirectoryPath }) ?? urls.first else { return }
         Task { @MainActor in
@@ -26,6 +32,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         true
     }
+
+    @objc(print:)
+    func printDocument(_ sender: Any?) {
+        Task { @MainActor in Self.printHandler?() }
+    }
+
+
 
     /// Called once the model is ready, to drain anything Finder sent early.
     @MainActor
@@ -51,5 +64,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             if FileManager.default.fileExists(atPath: url.path) { return url }
         }
         return nil
+    }
+}
+
+/// Keeps File ▸ Print enabled: AppKit validates the item before showing it,
+/// and an unvalidated action renders the menu entry grey.
+extension AppDelegate: NSMenuItemValidation {
+    func validateMenuItem(_ item: NSMenuItem) -> Bool {
+        guard item.action == #selector(printDocument(_:)) else { return true }
+        return MainActor.assumeIsolated { Self.printHandler != nil }
     }
 }

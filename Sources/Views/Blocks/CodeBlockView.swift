@@ -9,6 +9,8 @@ struct CodeBlockView: View {
     let source: String
 
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
+
     @EnvironmentObject private var search: SearchModel
     @Environment(\.searchBlockID) private var blockID
     @State private var runs: [SyntaxRun]?
@@ -54,7 +56,7 @@ struct CodeBlockView: View {
     }
 
     private var attributed: AttributedString {
-        let font = Font.system(size: Typography.code, design: .monospaced)
+        let font = Font.system(size: typography.code, design: .monospaced)
         let ranges = highlightRanges
         let current = currentRange
         let pieces = runs ?? [SyntaxRun(text: source, kind: .plain)]

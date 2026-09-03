@@ -5,6 +5,7 @@ import SwiftUI
 struct ThemePickerButton: View {
     @EnvironmentObject private var themeStore: ThemeStore
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
 
     @State private var isPresented = false
 
@@ -36,6 +37,7 @@ struct ThemePickerButton: View {
 struct ThemePalettePopover: View {
     @EnvironmentObject private var themeStore: ThemeStore
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
     @Binding var isPresented: Bool
 
     var body: some View {
@@ -92,6 +94,7 @@ private struct ThemeRow: View {
     let action: () -> Void
 
     @Environment(\.theme) private var theme
+    @Environment(\.typography) private var typography
     @State private var isHovering = false
 
     var body: some View {

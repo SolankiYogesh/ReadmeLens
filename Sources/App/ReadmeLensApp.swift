@@ -7,6 +7,7 @@ struct ReadmeLensApp: App {
     @StateObject private var document = DocumentModel()
     @StateObject private var themeStore = ThemeStore()
     @StateObject private var search = SearchModel()
+    @StateObject private var settings = AppSettings()
 
     var body: some Scene {
         WindowGroup {
@@ -14,14 +15,34 @@ struct ReadmeLensApp: App {
                 .environmentObject(document)
                 .environmentObject(themeStore)
                 .environmentObject(search)
+                .environmentObject(settings)
                 .environment(\.theme, themeStore.current)
+                .environment(\.typography, settings.typography)
                 .frame(minWidth: 640, minHeight: 480)
                 .background(themeStore.current.canvas)
                 .preferredColorScheme(themeStore.current.appearance == .dark ? .dark : .light)
-                .onAppear { AppDelegate.attach(document) }
+                .onAppear {
+                    AppDelegate.attach(document)
+                    // File ▸ Print reaches the app delegate, not SwiftUI.
+                    AppDelegate.printHandler = { printDocument() }
+                }
         }
         .windowToolbarStyle(.unified)
         .commands {
+            CommandGroup(after: .sidebar) {
+                Button("Zoom In") { settings.zoomIn() }
+                    .keyboardShortcut("+", modifiers: .command)
+                Button("Zoom In ") { settings.zoomIn() }
+                    .keyboardShortcut("=", modifiers: .command)
+                Button("Zoom Out") { settings.zoomOut() }
+                    .keyboardShortcut("-", modifiers: .command)
+                Button("Actual Size") { settings.resetZoom() }
+                    .keyboardShortcut("0", modifiers: .command)
+                Divider()
+                Toggle("Reading Mode", isOn: $settings.isReadingMode)
+                    .keyboardShortcut("r", modifiers: [.command, .option])
+                Divider()
+            }
             CommandGroup(replacing: .newItem) {
                 Button("Open…") { openPanel() }
                     .keyboardShortcut("o", modifiers: .command)
@@ -67,6 +88,23 @@ struct ReadmeLensApp: App {
                 Button("Follow System") { themeStore.selectedID = ThemeStore.autoID }
             }
         }
+
+        Settings {
+            SettingsView()
+                .environmentObject(themeStore)
+                .environmentObject(settings)
+        }
+    }
+
+    private func printDocument() {
+        DocumentPrinter.print(
+            blocks: document.blocks,
+            theme: themeStore.current,
+            typography: settings.typography,
+            title: document.title,
+            document: document,
+            search: search
+        )
     }
 
     private func openPanel() {
