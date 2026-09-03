@@ -9,8 +9,16 @@ struct BlockFlattener {
 
     static func blocks(from document: Document) -> [RenderBlock] {
         var flattener = BlockFlattener()
-        return flattener.convert(Array(document.children))
+        let flat = flattener.convert(Array(document.children))
+        return flattener.resolveContainers(flat)
     }
+
+    /// Elements worth honouring when they wrap several Markdown blocks.
+    /// Anything else that spans blocks is left inline rather than nesting.
+    private static let wrappingTags: Set<String> = [
+        "div", "p", "center", "section", "figure", "blockquote", "picture",
+        "table", "details",
+    ]
 
     private mutating func claimID() -> Int {
         defer { nextID += 1 }
@@ -69,15 +77,119 @@ struct BlockFlattener {
             return RenderBlock(id: claimID(), kind: .rule)
 
         case let node as HTMLBlock:
-            // Shown as literal source, never interpreted — see InlineHTML.
-            let raw = node.rawHTML.trimmingCharacters(in: .whitespacesAndNewlines)
-            return raw.isEmpty ? nil : RenderBlock(id: claimID(), kind: .htmlBlock(raw))
+            return convertHTML(node.rawHTML)
 
         default:
             // Unknown container: keep its children rather than dropping content.
             let children = convert(Array(markup.children), quoteDepth: quoteDepth)
             return children.first
         }
+    }
+
+    // MARK: HTML
+
+    private mutating func convertHTML(_ rawHTML: String) -> RenderBlock? {
+        let raw = rawHTML.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !raw.isEmpty else { return nil }
+
+        // A block that is *only* a closing tag is the tail of a wrapper that
+        // CommonMark split when it hit a blank line.
+        if let tag = Self.soleClosingTag(raw) {
+            return RenderBlock(id: claimID(), kind: .htmlClose(tag))
+        }
+
+        let nodes = HTMLParser.parse(raw)
+
+        // Likewise, a block that is only an opening tag is a wrapper's head.
+        // `<details>` opens carrying its `<summary>`, so an empty-children
+        // test would miss it; what marks an opener is the absent closing tag.
+        if nodes.count == 1, case let .element(element) = nodes[0],
+           Self.wrappingTags.contains(element.tag),
+           !HTMLParser.voidElements.contains(element.tag),
+           !raw.lowercased().contains("</\(element.tag)"),
+           element.tag == "details" || element.children.isEmpty {
+            return RenderBlock(id: claimID(), kind: .htmlOpen(element))
+        }
+
+        return nodes.isEmpty ? nil : RenderBlock(id: claimID(), kind: .html(nodes))
+    }
+
+    private static func soleClosingTag(_ raw: String) -> String? {
+        guard raw.hasPrefix("</"), raw.hasSuffix(">") else { return nil }
+        let name = raw.dropFirst(2).dropLast()
+            .trimmingCharacters(in: .whitespaces)
+            .lowercased()
+        guard !name.isEmpty, name.allSatisfy({ $0.isLetter || $0.isNumber || $0 == "-" })
+        else { return nil }
+        return name
+    }
+
+    /// Folds `htmlOpen` / `htmlClose` marker pairs into nested `.container`
+    /// blocks, so `<div align="center">` around a logo and badges actually
+    /// centres them instead of printing its own source.
+    func resolveContainers(_ blocks: [RenderBlock]) -> [RenderBlock] {
+        var output: [RenderBlock] = []
+        var index = 0
+
+        while index < blocks.count {
+            let block = blocks[index]
+            guard case let .htmlOpen(element) = block.kind else {
+                if case .htmlClose = block.kind {
+                    index += 1          // unmatched closer: drop it silently
+                    continue
+                }
+                output.append(block)
+                index += 1
+                continue
+            }
+
+            // Find this element's matching close, honouring nesting of the
+            // same tag.
+            var depth = 1
+            var end: Int?
+            var cursor = index + 1
+            while cursor < blocks.count {
+                switch blocks[cursor].kind {
+                case let .htmlOpen(inner) where inner.tag == element.tag:
+                    depth += 1
+                case let .htmlClose(tag) where tag == element.tag:
+                    depth -= 1
+                    if depth == 0 { end = cursor }
+                default:
+                    break
+                }
+                if end != nil { break }
+                cursor += 1
+            }
+
+            guard let end else {
+                // Never closed — treat the opener as ordinary inline HTML so
+                // its content (an <img>, usually) still renders.
+                output.append(RenderBlock(id: block.id, kind: .html([.element(element)])))
+                index += 1
+                continue
+            }
+
+            let inner = resolveContainers(Array(blocks[(index + 1)..<end]))
+            if element.tag == "details" {
+                let summary = element.children.compactMap { node -> [HTMLNode]? in
+                    if case let .element(child) = node, child.tag == "summary" {
+                        return child.children
+                    }
+                    return nil
+                }.first ?? [.text("Details")]
+                output.append(
+                    RenderBlock(id: block.id, kind: .disclosure(summary: summary, blocks: inner))
+                )
+            } else {
+                output.append(
+                    RenderBlock(id: block.id,
+                                kind: .container(alignment: element.alignment, blocks: inner))
+                )
+            }
+            index = end + 1
+        }
+        return output
     }
 
     // MARK: Block quotes and GitHub alerts

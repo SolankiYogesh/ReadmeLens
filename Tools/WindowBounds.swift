@@ -14,7 +14,11 @@ for window in windows {
           let bounds = CGRect(dictionaryRepresentation: boundsDict as CFDictionary),
           bounds.width > 200, bounds.height > 200
     else { continue }
-    print("\(Int(bounds.origin.x)),\(Int(bounds.origin.y)),\(Int(bounds.width)),\(Int(bounds.height))")
+    // Window id first, then bounds. Callers should prefer `screencapture -l<id>`:
+    // region capture (-R) grabs whatever is frontmost in that rectangle, which
+    // can pick up an unrelated window sitting on top.
+    let number = window[kCGWindowNumber as String] as? Int ?? -1
+    print("\(number) \(Int(bounds.origin.x)),\(Int(bounds.origin.y)),\(Int(bounds.width)),\(Int(bounds.height))")
     exit(0)
 }
 FileHandle.standardError.write("no window found for \(target)\n".data(using: .utf8)!)

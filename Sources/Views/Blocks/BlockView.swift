@@ -4,6 +4,22 @@ import SwiftUI
 struct BlockView: View {
     let block: RenderBlock
     @Environment(\.theme) private var theme
+    @Environment(\.blockAlignment) private var alignment
+
+    private var frameAlignment: Alignment {
+        switch alignment {
+        case .center: return .center
+        case .right:  return .trailing
+        default:      return .leading
+        }
+    }
+    private var textAlignment: TextAlignment {
+        switch alignment {
+        case .center: return .center
+        case .right:  return .trailing
+        default:      return .leading
+        }
+    }
 
     var body: some View {
         switch block.kind {
@@ -13,7 +29,8 @@ struct BlockView: View {
         case let .paragraph(text):
             StyledText(inline: text)
                 .lineSpacing(5)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .multilineTextAlignment(textAlignment)
+                .frame(maxWidth: .infinity, alignment: frameAlignment)
 
         case let .code(language, source):
             CodeBlockView(language: language, source: source)
@@ -44,8 +61,26 @@ struct BlockView: View {
         case let .image(model):
             MarkdownImageView(model: model)
 
-        case let .htmlBlock(raw):
-            CodeBlockView(language: "html", source: raw)
+        case let .html(nodes):
+            HTMLNodesView(nodes: nodes, alignment: alignment)
+
+        case let .disclosure(summary, blocks):
+            DisclosureBlockView(summary: summary, blocks: blocks)
+
+        case let .container(alignment, blocks):
+            VStack(alignment: alignment == .center ? .center
+                            : alignment == .right ? .trailing : .leading,
+                   spacing: 14) {
+                ForEach(blocks) { BlockView(block: $0) }
+            }
+            .frame(maxWidth: .infinity,
+                   alignment: alignment == .center ? .center
+                            : alignment == .right ? .trailing : .leading)
+            .environment(\.blockAlignment, alignment)
+
+        // Folded into `.container` by the flattener; never reaches a view.
+        case .htmlOpen, .htmlClose:
+            EmptyView()
         }
     }
 }
@@ -58,15 +93,23 @@ struct HeadingView: View {
     let anchor: String
 
     @Environment(\.theme) private var theme
+    @Environment(\.blockAlignment) private var alignment
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: alignment == .center ? .center
+                        : alignment == .right ? .trailing : .leading,
+               spacing: 6) {
             StyledText(
                 inline: text,
                 size: Typography.headingSize(level),
                 weight: .semibold,
                 color: level >= 6 ? theme.fgMuted : theme.fg
             )
+            .multilineTextAlignment(alignment == .center ? .center
+                                  : alignment == .right ? .trailing : .leading)
+            .frame(maxWidth: .infinity,
+                   alignment: alignment == .center ? .center
+                            : alignment == .right ? .trailing : .leading)
             // GitHub underlines only its top two heading levels.
             if level <= 2 {
                 Rectangle().fill(theme.borderMuted).frame(height: 1)
@@ -175,50 +218,59 @@ struct ListView: View {
 
 struct MarkdownImageView: View {
     let model: ImageModel
-    @Environment(\.theme) private var theme
-
-    private var remoteURL: URL? {
-        guard let url = URL(string: model.source),
-              let scheme = url.scheme?.lowercased(),
-              scheme == "http" || scheme == "https"
-        else { return nil }
-        return url
-    }
+    @Environment(\.blockAlignment) private var alignment
 
     var body: some View {
-        Group {
-            if let url = remoteURL {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case let .success(image):
-                        image.resizable().scaledToFit()
-                    case .failure:
-                        placeholder(systemImage: "photo.badge.exclamationmark", label: model.alt)
-                    case .empty:
-                        ProgressView().controlSize(.small)
-                    @unknown default:
-                        EmptyView()
-                    }
+        DocumentImage(source: model.source, alt: model.alt)
+            .frame(maxWidth: .infinity,
+                   alignment: alignment == .center ? .center
+                            : alignment == .right ? .trailing : .leading)
+    }
+}
+
+/// `<details>` wrapping Markdown blocks.
+struct DisclosureBlockView: View {
+    let summary: [HTMLNode]
+    let blocks: [RenderBlock]
+
+    @Environment(\.theme) private var theme
+    @State private var isExpanded = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) { isExpanded.toggle() }
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 10, weight: .semibold))
+                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                        .foregroundStyle(theme.fgMuted)
+                    HTMLInlineRun(nodes: summary, weight: .semibold)
                 }
-            } else {
-                // Local images need a security-scoped bookmark to read under
-                // the sandbox; that arrives with file handling.
-                placeholder(systemImage: "photo", label: model.alt.isEmpty ? model.source : model.alt)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            if isExpanded {
+                VStack(alignment: .leading, spacing: 14) {
+                    ForEach(blocks) { BlockView(block: $0) }
+                }
+                .padding(.leading, 18)
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
+}
 
-    private func placeholder(systemImage: String, label: String) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: systemImage)
-            Text(label).font(.system(size: Typography.body * 0.9))
-        }
-        .foregroundStyle(theme.fgSubtle)
-        .padding(10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(theme.canvasSubtle)
-        .clipShape(RoundedRectangle(cornerRadius: 6))
-        .overlay(RoundedRectangle(cornerRadius: 6).stroke(theme.border, lineWidth: 1))
+/// Alignment inherited from an enclosing HTML container, so a Markdown image
+/// inside `<div align="center">` centres with everything around it.
+private struct BlockAlignmentKey: EnvironmentKey {
+    static let defaultValue: HTMLAlignment? = nil
+}
+
+extension EnvironmentValues {
+    var blockAlignment: HTMLAlignment? {
+        get { self[BlockAlignmentKey.self] }
+        set { self[BlockAlignmentKey.self] = newValue }
     }
 }

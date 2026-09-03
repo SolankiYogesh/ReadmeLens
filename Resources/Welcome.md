@@ -16,7 +16,33 @@ your files.
 > the dot always wears the current theme's accent colour.
 
 > [!WARNING]
-> Diagrams and syntax highlighting are not wired up yet — see the roadmap below.
+> Syntax highlighting is not wired up yet — see the roadmap below.
+
+## HTML in READMEs
+
+Four out of five real-world READMEs use raw HTML — centred logos, badge rows,
+`<details>` sections, `<kbd>` keys. ReadmeLens renders a safe subset of it
+rather than printing the source.
+
+<div align="center">
+
+**This block is centred by a `<div align="center">` wrapper.**
+
+</div>
+
+Inline tags work too: press <kbd>⌘O</kbd> to open a file, H<sub>2</sub>O for
+subscripts, and <b>bold</b> or <i>italic</i> via tags.
+
+<details>
+<summary>A collapsible section</summary>
+
+`<details>` becomes a real disclosure triangle, so long READMEs stay navigable.
+Click the heading above to fold this away again.
+
+</details>
+
+Nothing here is executed. `<script>`, `<style>` and `<iframe>` are discarded
+outright, and no web view is involved.
 
 ## Formatting
 
@@ -44,6 +70,7 @@ is the sort of thing that quietly breaks in naive renderers.
 - [x] Parse Markdown into blocks
 - [x] Theme token system
 - [x] GitHub Dark and eight more themes
+- [x] Inline and block HTML
 - [ ] Syntax highlighting
 - [ ] Mermaid diagrams
 
@@ -53,6 +80,7 @@ is the sort of thing that quietly breaks in naive renderers.
 |:--------|:------:|------:|
 | Block parsing | Done | 1 |
 | Themes (9) | Done | 2 |
+| HTML rendering | Done | 3 |
 | Highlighting | Pending | 3 |
 | Diagrams | Pending | 4 |
 | Search & TOC | Pending | 5 |
@@ -85,10 +113,9 @@ xcodebuild -project ReadmeLens.xcodeproj -scheme ReadmeLens build
 
 ## Roadmap
 
-Phase 3 adds a theme-aware syntax highlighter. Phase 4 bundles Mermaid so
-diagrams render offline. Phase 5 brings the table-of-contents sidebar and
-in-document search. Phase 6 adds file watching, so saving in your editor
-refreshes this view automatically.
+Next up is a theme-aware syntax highlighter, then Finder integration and
+auto-reload on save, a table-of-contents sidebar with in-document search, and a
+Quick Look extension so pressing Space on any `.md` in Finder previews it.
 
 ---
 

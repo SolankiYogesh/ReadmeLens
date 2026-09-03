@@ -11,6 +11,32 @@ final class DocumentModel: ObservableObject {
     @Published private(set) var isLoading = false
 
     var title: String { url?.lastPathComponent ?? "ReadmeLens" }
+
+    /// Folder the open document lives in — the base for relative images and
+    /// links. Nil for the bundled welcome page.
+    private(set) var baseDirectory: URL?
+
+    /// Turns an image `src` into something loadable: remote URLs pass through,
+    /// relative paths resolve against the document's folder.
+    func resolveImageURL(_ source: String) -> URL? {
+        let trimmed = source.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        if let url = URL(string: trimmed), let scheme = url.scheme?.lowercased() {
+            if scheme == "http" || scheme == "https" { return url }
+            if scheme == "file" { return url }
+            return nil                      // data:, javascript:, anything else
+        }
+        guard let baseDirectory else { return nil }
+        let relative = trimmed
+            .removingPercentEncoding ?? trimmed
+        let candidate = URL(fileURLWithPath: relative, relativeTo: baseDirectory)
+            .standardizedFileURL
+        // Never escape the document's folder.
+        guard candidate.path.hasPrefix(baseDirectory.standardizedFileURL.path)
+        else { return nil }
+        return candidate
+    }
     var isEmpty: Bool { blocks.isEmpty && errorMessage == nil }
 
     /// Shows the bundled welcome document so a fresh launch has something to
@@ -34,6 +60,7 @@ final class DocumentModel: ObservableObject {
         do {
             let text = try String(contentsOf: url, encoding: .utf8)
             self.url = url
+            self.baseDirectory = url.deletingLastPathComponent()
             render(text)
         } catch {
             self.url = url

@@ -10,10 +10,84 @@ enum InlineFlattener {
 
     static func flatten(_ container: Markup) -> InlineText {
         var spans: [InlineSpan] = []
+        var html = HTMLContext()
         for child in container.children {
-            append(child, style: [], link: nil, into: &spans)
+            if let node = child as? InlineHTML {
+                html.consume(node.rawHTML, into: &spans)
+                continue
+            }
+            append(child, style: html.style, link: html.link, into: &spans)
         }
         return InlineText(spans: merge(spans))
+    }
+
+    /// Tracks inline HTML tags as they open and close across a paragraph.
+    ///
+    /// swift-markdown hands back `<sub>`, its text, and `</sub>` as three
+    /// separate siblings, so the effect of a tag has to be carried between
+    /// them rather than nested. Tags that carry no inline meaning are dropped
+    /// rather than printed — showing raw markup is worse than showing nothing.
+    private struct HTMLContext {
+        private var stack: [String] = []
+        private var links: [String] = []
+
+        var style: InlineStyle {
+            var result: InlineStyle = []
+            for tag in stack {
+                switch tag {
+                case "b", "strong":               result.insert(.bold)
+                case "i", "em", "cite":           result.insert(.italic)
+                case "code", "kbd", "samp", "tt": result.insert(.code)
+                case "s", "del", "strike":        result.insert(.strike)
+                default:                          break
+                }
+            }
+            return result
+        }
+
+        var link: String? { links.last }
+
+        mutating func consume(_ rawHTML: String, into spans: inout [InlineSpan]) {
+            let nodes = HTMLParser.parse(rawHTML)
+            guard case let .element(element)? = nodes.first else {
+                // A closing tag parses to nothing; unwind the matching open.
+                let name = closingTagName(rawHTML)
+                if let name {
+                    if let index = stack.lastIndex(of: name) { stack.remove(at: index) }
+                    if name == "a", !links.isEmpty { links.removeLast() }
+                }
+                return
+            }
+
+            switch element.tag {
+            case "br":
+                spans.append(InlineSpan(text: "\n", style: style, link: link))
+            case "img":
+                // An inline image degrades to its alt text; a standalone image
+                // is promoted to a block before it reaches here.
+                let alt = element.attribute("alt") ?? ""
+                if !alt.isEmpty {
+                    spans.append(InlineSpan(text: alt, style: style.union(.italic), link: link))
+                }
+            case "wbr", "hr":
+                break
+            default:
+                if !HTMLParser.voidElements.contains(element.tag) {
+                    stack.append(element.tag)
+                    if element.tag == "a", let href = element.attribute("href") {
+                        links.append(href)
+                    }
+                }
+            }
+        }
+
+        private func closingTagName(_ raw: String) -> String? {
+            let trimmed = raw.trimmingCharacters(in: .whitespaces)
+            guard trimmed.hasPrefix("</"), trimmed.hasSuffix(">") else { return nil }
+            return trimmed.dropFirst(2).dropLast()
+                .trimmingCharacters(in: .whitespaces)
+                .lowercased()
+        }
     }
 
     private static func append(
@@ -42,12 +116,6 @@ enum InlineFlattener {
             // block by BlockFlattener before it ever reaches here.
             let alt = node.plainText.isEmpty ? (node.source ?? "image") : node.plainText
             spans.append(InlineSpan(text: alt, style: style.union(.italic), link: link))
-
-        case let node as InlineHTML:
-            // Inline HTML is shown literally rather than interpreted; a viewer
-            // that silently executed embedded markup would be a security
-            // problem, and READMEs use very little of it.
-            spans.append(InlineSpan(text: node.rawHTML, style: style.union(.code), link: link))
 
         case let node as Markdown.Link:
             for child in node.children {

@@ -31,9 +31,9 @@ job properly.
 > **Read-only by design.** ReadmeLens opens and renders files. It has no editor,
 > no save path, and no write entitlement — it *cannot* modify your files.
 
-- **Native and small.** SwiftUI + AppKit, a ~3 MB app, instant cold start.
-- **GitHub-accurate.** Alerts, task lists, table alignment and heading rules
-  match what you see on github.com.
+- **Native and small.** SwiftUI + AppKit, a ~5 MB app, instant cold start.
+- **GitHub-accurate.** Alerts, task lists, table alignment, heading rules — and
+  the raw HTML that four out of five real READMEs depend on.
 - **Nine themes**, switchable from a single dot in the toolbar.
 - **Private.** No network calls, no analytics, no telemetry.
 
@@ -115,7 +115,31 @@ CommonMark plus GitHub-Flavored Markdown, parsed with
 - Tables with per-column alignment
 - Block quotes, and `> [!NOTE]` alerts as native callouts
 - Fenced code blocks with a language tag and copy button
-- Images, autolinks, YAML frontmatter, CRLF and legacy line endings
+- Images, autolinks, CRLF and legacy line endings
+
+### HTML
+
+READMEs lean on raw HTML far more than people expect. Measured across 18 popular
+projects (React, Next.js, ollama, VS Code, Supabase, HuggingFace, uv, Vite and
+others): `<img>` appeared in **83%**, block-level `<div>`/`<p align>` in **77%**,
+and `<a>` in **66%**. Rendering those as literal source makes most READMEs open
+with a wall of markup, so ReadmeLens renders a safe subset instead:
+
+- `<div>` / `<p align="center">` / `<center>` wrappers, **including when they
+  wrap Markdown** and CommonMark splits them across blocks
+- `<img>` with `width`, `<picture>`, and `<a>` around them — badge rows flow and
+  wrap like a browser line-box
+- `<details>` / `<summary>` as a real disclosure triangle
+- `<b>`, `<i>`, `<code>`, `<kbd>`, `<sub>`, `<sup>`, `<br>`, `<h1>`–`<h6>`,
+  `<ul>`/`<ol>`, `<blockquote>`, `<table>`
+- HTML entities, and malformed markup — unclosed tags, stray closers, unquoted
+  attributes all degrade to something readable
+
+**Nothing is executed.** There is no web view. `<script>`, `<style>`,
+`<iframe>`, `<object>` and `<embed>` are discarded along with their contents.
+
+Known gap: `<sub>`/`<sup>` inside a Markdown paragraph render at normal
+baseline; inside an HTML block they shift correctly.
 
 ## Roadmap
 
@@ -124,13 +148,18 @@ CommonMark plus GitHub-Flavored Markdown, parsed with
 | 0 | Project scaffold, sandbox, document types | ✅ Done |
 | 1 | Markdown parse pipeline → identified render blocks | ✅ Done |
 | 2 | Theme token engine, nine themes, toolbar switcher | ✅ Done |
-| 3 | Theme-aware syntax highlighting | ⏳ Next |
-| 4 | Mermaid diagrams, bundled and offline | ⏳ Planned |
-| 5 | Table-of-contents sidebar and in-document search | ⏳ Planned |
-| 6 | Finder integration and auto-reload on save | ⏳ Planned |
-| 7 | Load a README straight from a GitHub URL | ⏳ Planned |
-| 8 | Settings window and custom themes from disk | ⏳ Planned |
-| 9 | Zoom, reading mode, release polish | ⏳ Planned |
+| 3 | Safe HTML subset, image loading | ✅ Done |
+| 4 | Theme-aware syntax highlighting | ⏳ Next |
+| 5 | Finder integration, auto-reload on save | ⏳ Planned |
+| 6 | Table-of-contents sidebar, in-document search | ⏳ Planned |
+| 7 | Quick Look extension — preview `.md` from Finder | ⏳ Planned |
+| 8 | Relative-link navigation, local image folder access | ⏳ Planned |
+| 9 | Settings window, custom themes from disk | ⏳ Planned |
+| 10 | Export to PDF, zoom, reading mode | ⏳ Planned |
+
+Mermaid and LaTeX were originally scheduled early; measuring the corpus showed
+**neither appears in any of the 18 READMEs sampled**, so they were demoted below
+work that affects most documents.
 
 ## Architecture
 

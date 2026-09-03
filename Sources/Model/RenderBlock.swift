@@ -40,7 +40,20 @@ indirect enum BlockKind: Hashable {
     case table(TableModel)
     case rule
     case image(ImageModel)
-    case htmlBlock(String)
+    case html([HTMLNode])
+
+    /// A run of blocks wrapped by an HTML element that spans them, such as the
+    /// `<div align="center">` header most READMEs open with.
+    case container(alignment: HTMLAlignment?, blocks: [RenderBlock])
+
+    /// `<details>` wrapping Markdown, collapsed behind its `<summary>`.
+    case disclosure(summary: [HTMLNode], blocks: [RenderBlock])
+
+    // Markers emitted when an HTML element opens in one CommonMark block and
+    // closes in a later one. `BlockFlattener` folds them into `.container`
+    // before the views ever run.
+    case htmlOpen(HTMLElement)
+    case htmlClose(String)
 }
 
 /// One renderable unit of the document.
