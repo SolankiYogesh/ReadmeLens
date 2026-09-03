@@ -92,8 +92,8 @@ and it appears in the picker straight away. **Export Current Theme as JSON**
 gives you a complete file to edit. A theme that fails to load is reported by
 name, field and value rather than being ignored.
 
-<kbd>⌘P</kbd> prints, and the print panel's **PDF ▸ Save as PDF** is how you get
-a PDF. The print system does the writing, so this app still never needs
+<kbd>⌘P</kbd> — or the printer button in the toolbar — prints, and the print
+panel's **PDF ▸ Save as PDF** is how you get a PDF. The print system does the writing, so this app still never needs
 permission to write anything.
 
 ## Formatting

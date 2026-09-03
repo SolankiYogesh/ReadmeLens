@@ -79,8 +79,14 @@ A complete example is in [docs/example-theme.json](docs/example-theme.json).
 routing it that way means the print system does the writing and the app keeps
 its read-only sandbox.
 
+There is a printer button in the toolbar next to the theme dot, as well as `⌘P`.
+
 Dark themes print on a light ground; printing a dark canvas wastes ink and reads
 badly on paper.
+
+A sandboxed app needs `com.apple.security.print` to print at all — without it
+macOS refuses with its own "this application does not support printing" alert.
+That entitlement covers printing only; file access remains read-only.
 
 One known limitation: pages are sliced at a fixed height, so a line of text can
 be cut across a page break. Making pagination block-aware is the fix, and it is
@@ -215,7 +221,7 @@ swift Tools/GenerateAppIcon.swift Resources/Assets.xcassets/AppIcon.appiconset
 | Settings | `⌘,` |
 | Zoom | `⌘+` / `⌘−` / `⌘0` |
 | Reading mode | `⌥⌘R` |
-| Print, or save a PDF | `⌘P`, then **PDF ▸ Save as PDF** |
+| Print, or save a PDF | `⌘P` or the toolbar printer, then **PDF ▸ Save as PDF** |
 | Reload on save | Automatic — toggle with `⇧⌘R` |
 | Switch theme | Click the dot in the toolbar |
 | Copy a code block | Hover it, then click the copy button |

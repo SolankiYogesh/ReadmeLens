@@ -39,7 +39,15 @@ struct ContentView: View {
                     .disabled(!document.canGoForward)
                     .help("Forward")
             }
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    AppDelegate.printHandler?()
+                } label: {
+                    Image(systemName: "printer")
+                }
+                .disabled(document.blocks.isEmpty)
+                .help("Print… (⌘P)")
+
                 ThemePickerButton()
             }
         }

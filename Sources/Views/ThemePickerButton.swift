@@ -10,20 +10,18 @@ struct ThemePickerButton: View {
     @State private var isPresented = false
 
     var body: some View {
+        // An SF Symbol rather than a hand-drawn Circle: the toolbar gives every
+        // button a capsule background sized to its content, and a bare 13pt
+        // circle made that capsule taller than it was wide — a vertical oval.
+        // A symbol carries the metrics the toolbar expects, so it sits in a
+        // round button like any other item.
         Button {
             isPresented.toggle()
         } label: {
-            Circle()
-                .fill(theme.link)
-                .frame(width: 13, height: 13)
-                .overlay(
-                    Circle().stroke(theme.fg.opacity(0.25), lineWidth: 0.5)
-                )
-                // A hit area larger than the dot, so it stays easy to click.
-                .padding(5)
-                .contentShape(Circle())
+            Image(systemName: "circle.fill")
+                .font(.system(size: 13))
+                .foregroundStyle(theme.link)
         }
-        .buttonStyle(.plain)
         .help("Theme — \(themeStore.displayName)")
         .popover(isPresented: $isPresented, arrowEdge: .bottom) {
             ThemePalettePopover(isPresented: $isPresented)

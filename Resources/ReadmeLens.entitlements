@@ -10,5 +10,9 @@
   <true/>
   <key>com.apple.security.network.client</key>
   <true/>
+  <!-- Printing only. This does NOT grant write access anywhere: the print
+       system owns the output, including PDF ▸ Save as PDF. -->
+  <key>com.apple.security.print</key>
+  <true/>
 </dict>
 </plist>
