@@ -19,12 +19,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @MainActor static var printHandler: (() -> Void)?
 
     func application(_ application: NSApplication, open urls: [URL]) {
-        guard let url = urls.first(where: { !$0.hasDirectoryPath }) ?? urls.first else { return }
+        // Selecting several files in Finder and pressing Return delivers them
+        // all at once; they become one trail rather than only the first
+        // being opened and the rest discarded.
+        let files = urls.filter { !$0.hasDirectoryPath }
+        guard !files.isEmpty else { return }
         Task { @MainActor in
             if let document = Self.document {
-                document.open(url)
+                document.open(files)
             } else {
-                Self.queued.append(url)
+                Self.queued.append(contentsOf: files)
             }
         }
     }
@@ -44,26 +48,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @MainActor
     static func attach(_ model: DocumentModel) {
         document = model
-        if let pending = queued.first {
+        if !queued.isEmpty {
+            let pending = queued
             queued.removeAll()
             model.open(pending)
             return
         }
-        if let argument = launchArgumentURL() {
-            model.open(argument)
+        let arguments = launchArgumentURLs()
+        if !arguments.isEmpty {
+            model.open(arguments)
         }
     }
 
-    /// Supports `ReadmeLens.app/Contents/MacOS/ReadmeLens path/to/README.md`,
-    /// which is how the app is driven from a terminal.
+    /// Supports `ReadmeLens.app/Contents/MacOS/ReadmeLens a.md b.md`, which is
+    /// how the app is driven from a terminal.
     @MainActor
-    private static func launchArgumentURL() -> URL? {
-        for argument in CommandLine.arguments.dropFirst() {
-            guard !argument.hasPrefix("-") else { continue }
+    private static func launchArgumentURLs() -> [URL] {
+        CommandLine.arguments.dropFirst().compactMap { argument in
+            guard !argument.hasPrefix("-") else { return nil }
             let url = URL(fileURLWithPath: argument).standardizedFileURL
-            if FileManager.default.fileExists(atPath: url.path) { return url }
+            return FileManager.default.fileExists(atPath: url.path) ? url : nil
         }
-        return nil
     }
 }
 

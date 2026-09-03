@@ -123,6 +123,17 @@ where they sit, with the current one picked out more brightly, and `⌘G` steps
 through them. A match inside a list item or quote scrolls to the block that
 contains it, since nested content is not addressable on its own.
 
+## Several documents at once
+
+Select a handful of `.md` files in Finder and open them together, drop them on
+the window, or pick several in `⌘O`. They become one trail, and the toolbar
+arrows walk it — with a **2 of 5** counter so you know where you are.
+
+Following a link inside a document appends to the same trail, so the arrows
+always mean one thing rather than being link-only history that stays disabled
+until you happen to click a link. As in a browser, following a link partway
+through replaces whatever was ahead.
+
 ## Live preview
 
 Leave ReadmeLens open beside your editor: saving refreshes the view in place and
@@ -230,10 +241,10 @@ swift Tools/GenerateAppIcon.swift Resources/Assets.xcassets/AppIcon.appiconset
 | Action | How |
 |:--|:--|
 | Preview without opening | Select a `.md` in Finder, press `Space` |
-| Open a file | `⌘O`, drop a `.md` on the window, or double-click one in Finder |
+| Open files | `⌘O`, drop them on the window, or select them in Finder |
+| Move between open documents | The toolbar arrows, or `⌘[` / `⌘]` |
 | Open from a terminal | `open -a ReadmeLens README.md` |
 | Follow a link to another file | Click it — it opens in place |
-| Go back / forward | `⌘[` / `⌘]`, or the toolbar arrows |
 | Jump to a heading | Click any `#anchor` link |
 | Find in document | `⌘F`, then `⌘G` / `⇧⌘G` to step through matches |
 | Toggle the outline | `⌥⌘S` |

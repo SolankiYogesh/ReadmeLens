@@ -133,6 +133,85 @@ final class NavigationTests: XCTestCase {
         XCTAssertFalse(model.canGoForward)
     }
 
+    // MARK: Several documents at once
+
+    func testOpeningSeveralFilesMakesThemOneTrail() throws {
+        let a = try write("# A", to: "a.md")
+        let b = try write("# B", to: "b.md")
+        let c = try write("# C", to: "c.md")
+
+        let model = DocumentModel()
+        model.open([a, b, c])
+
+        XCTAssertEqual(model.url?.lastPathComponent, "a.md")
+        XCTAssertEqual(model.trailPosition, "1 of 3")
+        XCTAssertFalse(model.canGoBack)
+        XCTAssertTrue(model.canGoForward)
+
+        model.goForward()
+        XCTAssertEqual(model.url?.lastPathComponent, "b.md")
+        XCTAssertEqual(model.trailPosition, "2 of 3")
+        XCTAssertTrue(model.canGoBack)
+
+        model.goForward()
+        XCTAssertEqual(model.url?.lastPathComponent, "c.md")
+        XCTAssertFalse(model.canGoForward)
+
+        model.goBack()
+        model.goBack()
+        XCTAssertEqual(model.url?.lastPathComponent, "a.md")
+        XCTAssertFalse(model.canGoBack)
+    }
+
+    /// A Finder selection can include anything; only Markdown belongs in the
+    /// trail.
+    func testNonMarkdownFilesAreFilteredOut() throws {
+        let a = try write("# A", to: "a.md")
+        let image = try write("not markdown", to: "picture.png")
+        let b = try write("# B", to: "b.markdown")
+
+        let model = DocumentModel()
+        model.open([a, image, b])
+        XCTAssertEqual(model.trail.map(\.lastPathComponent), ["a.md", "b.markdown"])
+        XCTAssertEqual(model.trailPosition, "1 of 2")
+        XCTAssertEqual(model.url?.lastPathComponent, "a.md")
+    }
+
+    func testSingleDocumentShowsNoPositionIndicator() throws {
+        let a = try write("# A", to: "a.md")
+        let model = DocumentModel()
+        model.open([a])
+        XCTAssertNil(model.trailPosition)
+    }
+
+    /// Following a link partway through a set replaces what was ahead, the way
+    /// a browser does.
+    func testFollowingALinkMidTrailReplacesWhatIsAhead() throws {
+        let a = try write("# A", to: "a.md")
+        let b = try write("# B", to: "b.md")
+        let c = try write("# C", to: "c.md")
+        let linked = try write("# Linked", to: "linked.md")
+
+        let model = DocumentModel()
+        model.open([a, b, c])
+        model.goForward()                     // now on b
+        model.open(linked)                    // follow a link
+
+        XCTAssertEqual(model.url?.lastPathComponent, "linked.md")
+        XCTAssertFalse(model.canGoForward)
+        XCTAssertEqual(model.trail.map(\.lastPathComponent), ["a.md", "b.md", "linked.md"])
+
+        model.goBack()
+        XCTAssertEqual(model.url?.lastPathComponent, "b.md")
+    }
+
+    func testEmptySelectionIsIgnored() {
+        let model = DocumentModel()
+        model.open([URL]())
+        XCTAssertNil(model.url)
+        XCTAssertNil(model.trailPosition)
+    }
+
     func testReopeningTheSameDocumentDoesNotGrowHistory() throws {
         let model = try openedDocument()
         let same = model.url!

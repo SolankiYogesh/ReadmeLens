@@ -119,15 +119,15 @@ struct ReadmeLensApp: App {
 
     private func openPanel() {
         let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = false
+        panel.allowsMultipleSelection = true
         panel.canChooseDirectories = false
         panel.allowedContentTypes = [
             UTType(filenameExtension: "md") ?? .plainText,
             UTType(filenameExtension: "markdown") ?? .plainText,
             .plainText
         ]
-        if panel.runModal() == .OK, let url = panel.url {
-            document.open(url)
+        if panel.runModal() == .OK, !panel.urls.isEmpty {
+            document.open(panel.urls)
         }
     }
 }

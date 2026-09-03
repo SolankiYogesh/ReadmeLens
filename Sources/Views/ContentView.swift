@@ -39,6 +39,14 @@ struct ContentView: View {
                 Button { document.goForward() } label: { Image(systemName: "chevron.right") }
                     .disabled(!document.canGoForward)
                     .help("Forward")
+
+                if let position = document.trailPosition {
+                    Text(position)
+                        .font(.system(size: 11))
+                        .foregroundStyle(theme.fgMuted)
+                        .monospacedDigit()
+                        .help("Document \(position) — use the arrows or ⌘[ and ⌘]")
+                }
             }
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
@@ -149,11 +157,25 @@ struct ContentView: View {
         return .systemAction
     }
 
+    /// Dropping several files at once opens them as one trail.
     private func loadDrop(_ providers: [NSItemProvider]) -> Bool {
-        guard let provider = providers.first else { return false }
-        _ = provider.loadObject(ofClass: URL.self) { url, _ in
-            guard let url else { return }
-            Task { @MainActor in document.open(url) }
+        guard !providers.isEmpty else { return false }
+        let group = DispatchGroup()
+        // Providers resolve out of order, so results are kept in slots.
+        var resolved = [URL?](repeating: nil, count: providers.count)
+        let lock = NSLock()
+
+        for (index, provider) in providers.enumerated() {
+            group.enter()
+            _ = provider.loadObject(ofClass: URL.self) { url, _ in
+                lock.lock(); resolved[index] = url; lock.unlock()
+                group.leave()
+            }
+        }
+        group.notify(queue: .main) {
+            let urls = resolved.compactMap { $0 }
+            guard !urls.isEmpty else { return }
+            Task { @MainActor in document.open(urls) }
         }
         return true
     }

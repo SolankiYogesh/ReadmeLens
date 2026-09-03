@@ -47,6 +47,10 @@ Links to other files open in place — press <kbd>⌘[</kbd> to go back and
 <kbd>⌘]</kbd> to go forward, or use the toolbar arrows. Links to a heading
 scroll there without leaving the document.
 
+Open several files at once — select them in Finder, drop them on the window, or
+pick several with <kbd>⌘O</kbd> — and the same arrows walk between them, with a
+counter showing which one you are on.
+
 Local images resolve against the folder the document lives in. Because the app
 is sandboxed, the first document that needs it will offer a one-time folder
 grant.

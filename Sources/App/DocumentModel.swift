@@ -51,8 +51,14 @@ final class DocumentModel: ObservableObject {
     private var watcher: FileWatcher?
     private var acknowledgeTask: Task<Void, Never>?
 
-    private var back: [URL] = []
-    private var forward: [URL] = []
+    /// Everything reachable with the back and forward arrows, in order.
+    ///
+    /// One trail covers both cases: opening several files at once seeds it
+    /// with all of them, and following a link appends to it. That way the
+    /// arrows always mean the same thing rather than being link-only history
+    /// that stays disabled until you happen to click a link.
+    @Published private(set) var trail: [URL] = []
+    @Published private(set) var position: Int = 0
     /// Folder whose security scope this document currently holds.
     private var heldFolder: URL?
 
@@ -89,8 +95,13 @@ final class DocumentModel: ObservableObject {
 
     var title: String { url?.lastPathComponent ?? "ReadmeLens" }
     var isEmpty: Bool { blocks.isEmpty && errorMessage == nil }
-    var canGoBack: Bool { !back.isEmpty }
-    var canGoForward: Bool { !forward.isEmpty }
+    var canGoBack: Bool { position > 0 }
+    var canGoForward: Bool { position + 1 < trail.count }
+
+    /// "2 of 5" when several documents are open, otherwise nil.
+    var trailPosition: String? {
+        trail.count > 1 ? "\(position + 1) of \(trail.count)" : nil
+    }
 
     /// Folder the open document lives in — the base for relative references.
     private(set) var baseDirectory: URL?
@@ -107,23 +118,52 @@ final class DocumentModel: ObservableObject {
     // MARK: - Opening
 
     func open(_ url: URL, recordHistory: Bool = true) {
-        if recordHistory, let current = self.url, current != url {
-            back.append(current)
-            forward.removeAll()
+        guard recordHistory else {
+            load(url)
+            return
+        }
+        // Re-opening what is already showing should not grow the trail.
+        if trail.indices.contains(position), trail[position] == url {
+            load(url)
+            return
+        }
+        if trail.isEmpty {
+            trail = [url]
+            position = 0
+        } else {
+            // Anything ahead of here is replaced, as in a browser.
+            trail.removeSubrange((position + 1)...)
+            trail.append(url)
+            position = trail.count - 1
         }
         load(url)
     }
 
+    /// Opens several documents as one trail — selecting a folder of notes in
+    /// Finder and hitting Return lands here.
+    func open(_ urls: [URL]) {
+        let files = urls.filter {
+            Self.markdownExtensions.contains($0.pathExtension.lowercased())
+        }
+        guard let first = files.first else {
+            if let single = urls.first { open(single) }
+            return
+        }
+        trail = files
+        position = 0
+        load(first)
+    }
+
     func goBack() {
-        guard let previous = back.popLast() else { return }
-        if let current = url { forward.append(current) }
-        load(previous)
+        guard canGoBack else { return }
+        position -= 1
+        load(trail[position])
     }
 
     func goForward() {
-        guard let next = forward.popLast() else { return }
-        if let current = url { back.append(current) }
-        load(next)
+        guard canGoForward else { return }
+        position += 1
+        load(trail[position])
     }
 
     private func load(_ url: URL) {
