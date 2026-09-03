@@ -19,6 +19,7 @@
 		4224F32A1DACFF95005FDFEF /* ThemeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB92B3C48041572F10129D0 /* ThemeStore.swift */; };
 		42BD63FCAD02D7FC1EF70ADA /* InlineFlattener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A390528BCAB052347C3E767 /* InlineFlattener.swift */; };
 		4A45EC23E2F832BA12A448F6 /* HTMLNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A71131794E5C8D6308F3EB /* HTMLNode.swift */; };
+		55B5324188ECB56506F07E7F /* FileWatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E02FE627EDBD3FE6F6D7F4EA /* FileWatcherTests.swift */; };
 		584BFC5F197ED2BE907AFA18 /* NavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1833AF6D15F24862CC232A5 /* NavigationTests.swift */; };
 		5A6293ADAE51FDEC5D67714F /* DocumentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EF9EBC424858374A46CDE1 /* DocumentModel.swift */; };
 		6312B82B2136EDA6291C1CD0 /* LanguageGrammar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0521C09D905085B18135CBC /* LanguageGrammar.swift */; };
@@ -29,6 +30,7 @@
 		865575C628CFB4364B7C7AD3 /* ReadmeLensApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 935E18BE23449FE2B7667A17 /* ReadmeLensApp.swift */; };
 		8E97755B398338D446FC4120 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DAD611EDABF5EE906C9DA99D /* Assets.xcassets */; };
 		A0C03E011B89B5A09E11C7E3 /* DocumentImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91F73CE5C3D1AC1D1CF290E6 /* DocumentImage.swift */; };
+		AC5960778B8796D07A00D0DA /* FileWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264BFD166449A5A529A853A7 /* FileWatcher.swift */; };
 		B8DEA90491C5EA7BA7EF055F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905CC632DC6C8BE56B18FE1C /* ContentView.swift */; };
 		BCEE4CA55D1A7C82C8622864 /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2602A4E4552968859CDA54B /* ThemeTests.swift */; };
 		C7B91126D3A57EF72144B3F7 /* BlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBA1ACD234F8612651606AD /* BlockView.swift */; };
@@ -60,6 +62,7 @@
 		1E8436DBE8F09535F21BFFFE /* SyntaxHighlighterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHighlighterTests.swift; sourceTree = "<group>"; };
 		21E98A6295B231E05C5E160F /* StyledText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyledText.swift; sourceTree = "<group>"; };
 		2323B7C4F76AC05FBF874635 /* BuiltinThemes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuiltinThemes.swift; sourceTree = "<group>"; };
+		264BFD166449A5A529A853A7 /* FileWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileWatcher.swift; sourceTree = "<group>"; };
 		272F12ADEC84882D136F3F89 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		27A71131794E5C8D6308F3EB /* HTMLNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLNode.swift; sourceTree = "<group>"; };
 		35637A8A5455B850AFAD6646 /* ParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserTests.swift; sourceTree = "<group>"; };
@@ -86,6 +89,7 @@
 		D2F07D250039DB2734A8B138 /* HTMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLParser.swift; sourceTree = "<group>"; };
 		DAD611EDABF5EE906C9DA99D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DC66BD8DA7A8AFF42D5F4384 /* MarkdownTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownTableView.swift; sourceTree = "<group>"; };
+		E02FE627EDBD3FE6F6D7F4EA /* FileWatcherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileWatcherTests.swift; sourceTree = "<group>"; };
 		ED5C4E0A52086E5F3217FC88 /* HTMLParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLParserTests.swift; sourceTree = "<group>"; };
 		F1833AF6D15F24862CC232A5 /* NavigationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationTests.swift; sourceTree = "<group>"; };
 		F2385B789D786D47CD2EBA0C /* BlockFlattener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockFlattener.swift; sourceTree = "<group>"; };
@@ -115,6 +119,7 @@
 		0F503EA8C835F1D14D58368D /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				E02FE627EDBD3FE6F6D7F4EA /* FileWatcherTests.swift */,
 				B43A7E2538BEBCFDFADB3851 /* HTMLIntegrationTests.swift */,
 				ED5C4E0A52086E5F3217FC88 /* HTMLParserTests.swift */,
 				F1833AF6D15F24862CC232A5 /* NavigationTests.swift */,
@@ -173,6 +178,7 @@
 			children = (
 				272F12ADEC84882D136F3F89 /* AppDelegate.swift */,
 				18EF9EBC424858374A46CDE1 /* DocumentModel.swift */,
+				264BFD166449A5A529A853A7 /* FileWatcher.swift */,
 				10672609D88CF0FA95FDB640 /* FolderAccessStore.swift */,
 				935E18BE23449FE2B7667A17 /* ReadmeLensApp.swift */,
 				CDB92B3C48041572F10129D0 /* ThemeStore.swift */,
@@ -365,6 +371,7 @@
 				B8DEA90491C5EA7BA7EF055F /* ContentView.swift in Sources */,
 				A0C03E011B89B5A09E11C7E3 /* DocumentImage.swift in Sources */,
 				5A6293ADAE51FDEC5D67714F /* DocumentModel.swift in Sources */,
+				AC5960778B8796D07A00D0DA /* FileWatcher.swift in Sources */,
 				FED2BBDEA845BCAA4E4E5D48 /* FlowLayout.swift in Sources */,
 				14F3DEE5F2EE0D9DB2107A9F /* FolderAccessStore.swift in Sources */,
 				7C17592F304456A54B5FEE41 /* HTMLInlineRun.swift in Sources */,
@@ -389,6 +396,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55B5324188ECB56506F07E7F /* FileWatcherTests.swift in Sources */,
 				D7903A3D7EBACB1F90EE595B /* HTMLIntegrationTests.swift in Sources */,
 				6C080D43C8FC01AAA7631170 /* HTMLParserTests.swift in Sources */,
 				584BFC5F197ED2BE907AFA18 /* NavigationTests.swift in Sources */,

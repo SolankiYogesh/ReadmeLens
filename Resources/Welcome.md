@@ -51,6 +51,16 @@ Local images resolve against the folder the document lives in. Because the app
 is sandboxed, the first document that needs it will offer a one-time folder
 grant.
 
+## Live preview
+
+Keep this window beside your editor. Saving the file refreshes the view in
+place, keeping your position in the document — a brief **Updated** badge
+confirms it happened.
+
+Editors that save by writing a temporary file and renaming it over the original
+are handled too, which is most of them. Toggle the behaviour with
+<kbd>⇧⌘R</kbd>.
+
 ## Formatting
 
 Text can be **bold**, *italic*, ***both at once***, ~~struck through~~, or
@@ -80,7 +90,8 @@ is the sort of thing that quietly breaks in naive renderers.
 - [x] Inline and block HTML
 - [x] Local images, relative links, anchors
 - [x] Syntax highlighting
-- [ ] Auto-reload on save
+- [x] Auto-reload on save
+- [ ] Table of contents & search
 - [ ] Mermaid diagrams
 
 ## Tables
@@ -92,7 +103,7 @@ is the sort of thing that quietly breaks in naive renderers.
 | HTML rendering | Done | 3 |
 | Links & local images | Done | 4 |
 | Syntax highlighting | Done | 5 |
-| Auto-reload | Pending | 6 |
+| Auto-reload | Done | 6 |
 | Search & TOC | Pending | 7 |
 
 ## Code
@@ -146,9 +157,8 @@ than guessing.
 
 ## Roadmap
 
-Next up is auto-reload on save, then a table-of-contents sidebar with
-in-document search, and a Quick Look extension so pressing Space on any `.md`
-in Finder previews it.
+Next up is a table-of-contents sidebar with in-document search, then a Quick
+Look extension so pressing Space on any `.md` in Finder previews it.
 
 ---
 

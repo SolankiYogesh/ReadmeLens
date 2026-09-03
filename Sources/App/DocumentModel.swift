@@ -21,12 +21,38 @@ final class DocumentModel: ObservableObject {
     /// Anchor the view should scroll to, consumed once handled.
     @Published var pendingAnchor: String?
 
+    /// Bumped each time the file is re-read from disk, so the view can restore
+    /// the reading position and acknowledge the change.
+    @Published private(set) var reloadToken = 0
+
+    /// Set briefly after a reload, to acknowledge it in the UI.
+    @Published private(set) var didJustReload = false
+
+    @Published var isAutoReloadEnabled: Bool {
+        didSet {
+            UserDefaults.standard.set(isAutoReloadEnabled, forKey: Self.autoReloadKey)
+            isAutoReloadEnabled ? startWatching() : stopWatching()
+        }
+    }
+
+    private static let autoReloadKey = "autoReloadEnabled"
+    private var watcher: FileWatcher?
+    private var acknowledgeTask: Task<Void, Never>?
+
     private var back: [URL] = []
     private var forward: [URL] = []
     /// Folder whose security scope this document currently holds.
     private var heldFolder: URL?
 
     private let access = FolderAccessStore.shared
+
+    init() {
+        let defaults = UserDefaults.standard
+        if defaults.object(forKey: Self.autoReloadKey) == nil {
+            defaults.set(true, forKey: Self.autoReloadKey)
+        }
+        isAutoReloadEnabled = defaults.bool(forKey: Self.autoReloadKey)
+    }
 
     var title: String { url?.lastPathComponent ?? "ReadmeLens" }
     var isEmpty: Bool { blocks.isEmpty && errorMessage == nil }
@@ -37,6 +63,8 @@ final class DocumentModel: ObservableObject {
     private(set) var baseDirectory: URL?
 
     deinit {
+        watcher?.stop()
+        acknowledgeTask?.cancel()
         if let heldFolder {
             let store = access
             Task { @MainActor in store.endAccess(to: heldFolder) }
@@ -86,6 +114,7 @@ final class DocumentModel: ObservableObject {
             render(text)
             needsFolderAccess = hasLocalReferences && !canRead(folder)
             needsAccessToOpen = false
+            startWatching()
         } catch {
             self.url = url
             self.baseDirectory = folder
@@ -111,6 +140,56 @@ final class DocumentModel: ObservableObject {
         (try? FileManager.default.contentsOfDirectory(atPath: folder.path)) != nil
     }
 
+    // MARK: - Auto-reload
+
+    private func startWatching() {
+        stopWatching()
+        guard isAutoReloadEnabled, let url, url.isFileURL else { return }
+
+        let watcher = FileWatcher(url: url) { [weak self] in
+            Task { @MainActor in self?.reloadFromDisk() }
+        }
+        self.watcher = watcher
+        watcher.start()
+    }
+
+    private func stopWatching() {
+        watcher?.stop()
+        watcher = nil
+    }
+
+    /// Re-reads the open file after it changed on disk.
+    ///
+    /// A failed read leaves the current content in place rather than replacing
+    /// the document with an error — an editor mid-save can briefly make the
+    /// file unreadable, and blanking the window for that would be worse than
+    /// showing slightly stale text.
+    func reloadFromDisk() {
+        guard let url else { return }
+
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+
+        guard let text = try? String(contentsOf: url, encoding: .utf8) else { return }
+
+        render(text)
+        if let baseDirectory {
+            needsFolderAccess = hasLocalReferences && !canRead(baseDirectory)
+        }
+        reloadToken += 1
+        acknowledge()
+    }
+
+    private func acknowledge() {
+        didJustReload = true
+        acknowledgeTask?.cancel()
+        acknowledgeTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 1_400_000_000)
+            guard !Task.isCancelled else { return }
+            self?.didJustReload = false
+        }
+    }
+
     private func releaseFolder() {
         if let heldFolder { access.endAccess(to: heldFolder) }
         heldFolder = nil
@@ -133,7 +212,10 @@ final class DocumentModel: ObservableObject {
     }
 
     /// Shows the bundled welcome document.
+    ///
+    /// Nothing is watched here: the file lives inside the app bundle.
     func loadWelcome() {
+        stopWatching()
         guard let url = Bundle.main.url(forResource: "Welcome", withExtension: "md"),
               let text = try? String(contentsOf: url, encoding: .utf8)
         else { return }

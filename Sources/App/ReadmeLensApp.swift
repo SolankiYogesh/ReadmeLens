@@ -25,6 +25,9 @@ struct ReadmeLensApp: App {
                     .keyboardShortcut("o", modifiers: .command)
             }
             CommandGroup(after: .toolbar) {
+                Toggle("Reload on Save", isOn: $document.isAutoReloadEnabled)
+                    .keyboardShortcut("r", modifiers: [.command, .shift])
+                Divider()
                 Button("Back") { document.goBack() }
                     .keyboardShortcut("[", modifiers: .command)
                     .disabled(!document.canGoBack)

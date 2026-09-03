@@ -40,6 +40,7 @@ struct ContentView: View {
                 }
             }
         }
+        .overlay(alignment: .bottomTrailing) { reloadIndicator }
         .navigationTitle(document.title)
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
@@ -74,6 +75,26 @@ struct ContentView: View {
         }
         .task {
             if document.isEmpty { document.loadWelcome() }
+        }
+    }
+
+    /// Brief confirmation that the file changed on disk and was re-read.
+    @ViewBuilder
+    private var reloadIndicator: some View {
+        if document.didJustReload {
+            HStack(spacing: 6) {
+                Image(systemName: "arrow.clockwise")
+                    .font(.system(size: 10, weight: .semibold))
+                Text("Updated")
+                    .font(.system(size: 11, weight: .medium))
+            }
+            .foregroundStyle(theme.canvas)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(theme.link, in: Capsule())
+            .padding(16)
+            .transition(.opacity.combined(with: .move(edge: .bottom)))
+            .animation(.easeInOut(duration: 0.2), value: document.didJustReload)
         }
     }
 
@@ -175,6 +196,15 @@ struct GrantAccessButton: View {
     }
 }
 
+/// Reports where each rendered block sits, so the topmost visible one can be
+/// restored after the file is re-read.
+private struct VisibleBlocksKey: PreferenceKey {
+    static let defaultValue: [String: CGFloat] = [:]
+    static func reduce(value: inout [String: CGFloat], nextValue: () -> [String: CGFloat]) {
+        value.merge(nextValue()) { current, _ in current }
+    }
+}
+
 /// The scrolling document body.
 struct DocumentScrollView: View {
     let blocks: [RenderBlock]
@@ -182,12 +212,28 @@ struct DocumentScrollView: View {
     @EnvironmentObject private var document: DocumentModel
     @Environment(\.theme) private var theme
 
+    private static let space = "document"
+
+    /// Topmost block currently on screen — the anchor for restoring position.
+    @State private var topVisibleID: String?
+
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 14) {
                     ForEach(blocks, id: \.scrollID) { block in
                         BlockView(block: block)
+                            .background(
+                                GeometryReader { geometry in
+                                    Color.clear.preference(
+                                        key: VisibleBlocksKey.self,
+                                        value: [
+                                            block.scrollID:
+                                                geometry.frame(in: .named(Self.space)).minY
+                                        ]
+                                    )
+                                }
+                            )
                     }
                 }
                 .padding(.horizontal, 32)
@@ -195,13 +241,31 @@ struct DocumentScrollView: View {
                 .frame(maxWidth: Typography.contentMaxWidth, alignment: .leading)
                 .frame(maxWidth: .infinity, alignment: .center)
             }
+            .coordinateSpace(name: Self.space)
             .background(theme.canvas)
+            .onPreferenceChange(VisibleBlocksKey.self) { frames in
+                // The first block whose top edge has not yet passed above the
+                // viewport is what the reader is looking at.
+                topVisibleID = frames
+                    .filter { $0.value >= -40 }
+                    .min { $0.value < $1.value }?
+                    .key
+            }
             .onChange(of: document.pendingAnchor) { _, anchor in
                 guard let anchor else { return }
                 withAnimation(.easeInOut(duration: 0.25)) {
                     proxy.scrollTo("#\(anchor)", anchor: .top)
                 }
                 document.pendingAnchor = nil
+            }
+            .onChange(of: document.reloadToken) { _, _ in
+                // The list has just been rebuilt; let it lay out before
+                // scrolling, or the target may not exist yet.
+                guard let target = topVisibleID else { return }
+                Task { @MainActor in
+                    await Task.yield()
+                    proxy.scrollTo(target, anchor: .top)
+                }
             }
             .onChange(of: document.url) { _, _ in
                 // A freshly opened document starts at the top.

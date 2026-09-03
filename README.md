@@ -34,9 +34,24 @@ job properly.
 - **Native and small.** SwiftUI + AppKit, a ~5 MB app, instant cold start.
 - **GitHub-accurate.** Alerts, task lists, table alignment, heading rules — and
   the raw HTML that four out of five real READMEs depend on.
+- **Live preview.** Save in your editor and the view refreshes in place,
+  keeping your position in the document.
 - **Syntax highlighting** for ~20 languages, coloured by the active theme.
 - **Nine themes**, switchable from a single dot in the toolbar.
 - **Private.** No network calls, no analytics, no telemetry.
+
+## Live preview
+
+Leave ReadmeLens open beside your editor: saving refreshes the view in place and
+keeps your reading position, with a brief **Updated** badge to confirm.
+
+Most editors save by writing a temporary file and renaming it over the original,
+which replaces the file's inode — a watcher holding the original descriptor
+would go deaf after the first save. ReadmeLens re-arms on the *path*, so
+repeated saves keep working. Events from one save are debounced into a single
+reparse.
+
+Toggle it with `⇧⌘R`.
 
 ## Syntax highlighting
 
@@ -122,6 +137,7 @@ swift Tools/GenerateAppIcon.swift Resources/Assets.xcassets/AppIcon.appiconset
 | Follow a link to another file | Click it — it opens in place |
 | Go back / forward | `⌘[` / `⌘]`, or the toolbar arrows |
 | Jump to a heading | Click any `#anchor` link |
+| Reload on save | Automatic — toggle with `⇧⌘R` |
 | Switch theme | Click the dot in the toolbar |
 | Copy a code block | Hover it, then click the copy button |
 
@@ -185,8 +201,8 @@ baseline; inside an HTML block they shift correctly.
 | 3 | Safe HTML subset, image loading | ✅ Done |
 | 4 | Local images, relative links, anchors, Finder open | ✅ Done |
 | 5 | Theme-aware syntax highlighting | ✅ Done |
-| 6 | Auto-reload on save | ⏳ Next |
-| 7 | Table-of-contents sidebar, in-document search | ⏳ Planned |
+| 6 | Auto-reload on save | ✅ Done |
+| 7 | Table-of-contents sidebar, in-document search | ⏳ Next |
 | 8 | Quick Look extension — preview `.md` from Finder | ⏳ Planned |
 | 9 | Settings window, custom themes from disk | ⏳ Planned |
 | 10 | Export to PDF, zoom, reading mode | ⏳ Planned |
