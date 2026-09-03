@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>ReadmeLens — Free Markdown Viewer for macOS</title>
+<meta name="description" content="Free, open-source Markdown viewer for macOS. Open any .md or README and read it exactly as GitHub renders it — nine themes, Quick Look, live reload.">
+<link rel="canonical" href="https://solankiyogesh.github.io/ReadmeLens/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="Yogesh Solanki">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ReadmeLens">
+<meta property="og:title" content="ReadmeLens — Free Markdown Viewer for macOS">
+<meta property="og:description" content="Open any .md or README and read it exactly as GitHub renders it. Nine themes, Quick Look preview, live reload. Free and open source.">
+<meta property="og:url" content="https://solankiyogesh.github.io/ReadmeLens/">
+<meta property="og:image" content="https://solankiyogesh.github.io/ReadmeLens/social-card.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="ReadmeLens — a fast, native macOS Markdown viewer">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ReadmeLens — Free Markdown Viewer for macOS">
+<meta name="twitter:description" content="Read README files the way GitHub renders them. Native macOS app, nine themes, Quick Look preview.">
+<meta name="twitter:image" content="https://solankiyogesh.github.io/ReadmeLens/social-card.png">
+
+<link rel="icon" href="icon.png" type="image/png">
+<link rel="apple-touch-icon" href="icon.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "ReadmeLens",
+      "applicationCategory": "DeveloperApplication",
+      "applicationSubCategory": "Markdown Viewer",
+      "operatingSystem": "macOS 14.0 or later",
+      "description": "A free, open-source Markdown viewer for macOS that renders .md and README files exactly as GitHub does, with syntax highlighting, nine themes, Quick Look preview and live reload.",
+      "url": "https://solankiyogesh.github.io/ReadmeLens/",
+      "downloadUrl": "https://github.com/SolankiYogesh/ReadmeLens/releases/latest",
+      "softwareVersion": "0.10.1",
+      "license": "https://opensource.org/licenses/MIT",
+      "isAccessibleForFree": true,
+      "image": "https://solankiyogesh.github.io/ReadmeLens/social-card.png",
+      "screenshot": "https://solankiyogesh.github.io/ReadmeLens/screenshot-github-dark.png",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Person", "name": "Yogesh Solanki" },
+      "featureList": [
+        "GitHub-accurate Markdown rendering",
+        "Syntax highlighting for about twenty languages",
+        "Nine built-in themes plus custom JSON themes",
+        "Quick Look preview from Finder",
+        "Live reload when the file is saved",
+        "Table of contents sidebar and in-document search",
+        "Printing and PDF export"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I open a README.md file on a Mac?",
+          "acceptedAnswer": { "@type": "Answer", "text": "macOS has no built-in Markdown viewer, so a .md file opens as plain text in TextEdit. ReadmeLens renders it the way GitHub does. Install it, then double-click any .md file, or select it in Finder and press Space for a Quick Look preview." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is ReadmeLens free?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. ReadmeLens is free and open source under the MIT licence, with no account, subscription or telemetry." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can it preview Markdown in Finder with the Space bar?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. ReadmeLens ships a Quick Look extension, so selecting a .md file in Finder and pressing Space renders it without launching the app." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it edit Markdown files?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. ReadmeLens is read-only by design. It has no editor and no write entitlement, so it cannot modify your files." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it render GitHub-flavoured Markdown and HTML?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Tables, task lists, strikethrough and GitHub alert callouts all render, along with the raw HTML that most real READMEs contain: centred logos, badge rows, details sections and kbd tags." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it an Electron app?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. ReadmeLens is a native Swift and SwiftUI application. The download is a few megabytes and it starts instantly." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+  :root {
+    --canvas: #0d1117; --subtle: #161b22; --fg: #e6edf3; --muted: #8b949e;
+    --border: #30363d; --accent: #4493f8; --green: #3fb950;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--canvas); color: var(--fg);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+  header { text-align: center; padding: 72px 0 40px; }
+  header img.icon { width: 112px; height: 112px; }
+  h1 { font-size: 2.6rem; margin: 20px 0 8px; letter-spacing: -0.02em; }
+  .tagline { font-size: 1.2rem; color: var(--muted); margin: 0 auto 28px; max-width: 620px; }
+  .cta { display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .btn {
+    display: inline-block; padding: 11px 22px; border-radius: 8px;
+    text-decoration: none; font-weight: 600; font-size: 0.95rem;
+    background: var(--accent); color: #fff; border: 1px solid transparent;
+  }
+  .btn.secondary { background: var(--subtle); color: var(--fg); border-color: var(--border); }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-top: 14px; }
+  h2 { font-size: 1.6rem; margin: 56px 0 14px; letter-spacing: -0.01em; }
+  h3 { font-size: 1.05rem; margin: 26px 0 6px; }
+  p { color: #c9d1d9; }
+  a { color: var(--accent); }
+  img.shot {
+    width: 100%; border-radius: 10px; border: 1px solid var(--border); margin: 22px 0;
+  }
+  ul { color: #c9d1d9; padding-left: 20px; }
+  li { margin: 7px 0; }
+  code {
+    background: rgba(110,118,129,.25); padding: 2px 6px;
+    border-radius: 5px; font-size: 0.88em;
+  }
+  pre {
+    background: var(--subtle); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px; overflow-x: auto;
+  }
+  pre code { background: none; padding: 0; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card { background: var(--subtle); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .card h3 { margin-top: 0; }
+  .card p { margin: 0; font-size: 0.94rem; color: var(--muted); }
+  footer { border-top: 1px solid var(--border); margin-top: 72px; padding: 28px 0 60px; color: var(--muted); font-size: 0.9rem; }
+  @media (prefers-color-scheme: light) {
+    :root { --canvas: #fff; --subtle: #f6f8fa; --fg: #1f2328; --muted: #59636e; --border: #d1d9e0; --accent: #0969da; }
+    p, ul { color: #32383f; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <img class="icon" src="icon.png" width="112" height="112" alt="ReadmeLens app icon">
+  <h1>ReadmeLens</h1>
+  <p class="tagline">
+    A free, open-source <strong>Markdown viewer for macOS</strong>. Open any
+    <code>.md</code> or README file and read it exactly the way GitHub renders it —
+    no browser, no dev server, no Electron.
+  </p>
+  <div class="cta">
+    <a class="btn" href="https://github.com/SolankiYogesh/ReadmeLens/releases/latest">Download for macOS</a>
+    <a class="btn secondary" href="https://github.com/SolankiYogesh/ReadmeLens">View on GitHub</a>
+  </div>
+  <p class="meta">Free &amp; MIT licensed · macOS 14+ · Apple Silicon and Intel · ~4 MB</p>
+</header>
+
+<img class="shot" src="screenshot-github-dark.png"
+     alt="ReadmeLens showing a README rendered in the GitHub Dark theme, with an outline sidebar and syntax-highlighted code">
+
+<h2>Why a dedicated README viewer?</h2>
+<p>
+  macOS ships no Markdown viewer. Double-click a <code>.md</code> file and it opens
+  as raw text in TextEdit — headings as <code>#</code>, links as brackets, tables as
+  pipes. The usual workarounds are pushing the file to GitHub, running a dev server,
+  or installing a heavyweight editor just to read something.
+</p>
+<p>
+  ReadmeLens renders Markdown the way GitHub does, in a native app that opens
+  instantly and cannot modify your files.
+</p>
+
+<h2>Features</h2>
+<div class="grid">
+  <div class="card">
+    <h3>GitHub-accurate rendering</h3>
+    <p>Tables with alignment, task lists, alert callouts, and the raw HTML that four out of five real READMEs contain — centred logos, badge rows, <code>&lt;details&gt;</code> sections.</p>
+  </div>
+  <div class="card">
+    <h3>Syntax highlighting</h3>
+    <p>About twenty languages: Swift, TypeScript, Python, Go, Rust, C-family, shell, SQL, JSON, YAML and more.</p>
+  </div>
+  <div class="card">
+    <h3>Nine themes</h3>
+    <p>GitHub Dark and Light, Dracula, Nord, Gruvbox, Solarized, Tokyo Night, Catppuccin — plus your own from a JSON file.</p>
+  </div>
+  <div class="card">
+    <h3>Quick Look preview</h3>
+    <p>Select a <code>.md</code> file in Finder and press Space. It renders without launching the app.</p>
+  </div>
+  <div class="card">
+    <h3>Live reload</h3>
+    <p>Keep it beside your editor. Saving refreshes the view and keeps your place in the document.</p>
+  </div>
+  <div class="card">
+    <h3>Outline and search</h3>
+    <p>A heading sidebar that tracks where you are, and find-in-document that highlights matches in place.</p>
+  </div>
+</div>
+
+<h2>Themes</h2>
+<img class="shot" src="screenshot-tokyo-night.png" alt="ReadmeLens in the Tokyo Night theme">
+<img class="shot" src="screenshot-solarized-light.png" alt="ReadmeLens in the Solarized Light theme, showing the light appearance">
+
+<h2>Install</h2>
+<p>
+  Download the latest release, unzip it, and move <strong>ReadmeLens.app</strong> to
+  your Applications folder. Builds are ad-hoc signed rather than notarised, so on
+  first launch right-click the app and choose <strong>Open</strong>, or clear the
+  quarantine flag:
+</p>
+<pre><code>xattr -dr com.apple.quarantine /Applications/ReadmeLens.app</code></pre>
+<p>
+  On first launch it offers to become your default Markdown viewer, so
+  double-clicking any <code>.md</code> file opens it here.
+</p>
+
+<h2>Frequently asked questions</h2>
+
+<h3>How do I open a README.md file on a Mac?</h3>
+<p>
+  macOS has no built-in Markdown viewer, so a <code>.md</code> file opens as plain
+  text. Install ReadmeLens and double-click the file, or select it in Finder and
+  press Space for a Quick Look preview.
+</p>
+
+<h3>Is ReadmeLens free?</h3>
+<p>Yes — free and open source under the MIT licence. No account, no subscription, no telemetry.</p>
+
+<h3>Can it preview Markdown in Finder with the Space bar?</h3>
+<p>Yes. A Quick Look extension ships inside the app, so Space renders the file without launching anything.</p>
+
+<h3>Does it edit Markdown files?</h3>
+<p>
+  No. ReadmeLens is read-only by design — no editor, and no write entitlement, so it
+  cannot modify your files. Even PDF export goes through the system print panel.
+</p>
+
+<h3>Does it render GitHub-flavoured Markdown and HTML?</h3>
+<p>
+  Yes. Tables, task lists, strikethrough and alert callouts all render, along with the
+  inline HTML most real READMEs depend on.
+</p>
+
+<h3>Is it an Electron app?</h3>
+<p>No. It is native Swift and SwiftUI. The download is a few megabytes and it launches instantly.</p>
+
+<footer class="wrap">
+  ReadmeLens is free software released under the MIT licence.
+  <a href="https://github.com/SolankiYogesh/ReadmeLens">Source on GitHub</a> ·
+  <a href="https://github.com/SolankiYogesh/ReadmeLens/releases">Releases</a> ·
+  <a href="https://github.com/SolankiYogesh/ReadmeLens/issues">Report an issue</a>
+</footer>
+</div>
+
+</body>
+</html>

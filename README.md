@@ -4,10 +4,10 @@
 
 # ReadmeLens
 
-**A fast, native macOS viewer for Markdown — built for reading READMEs.**
+**A free, open-source Markdown viewer for macOS — built for reading READMEs.**
 
-Open a `.md` file and read it the way GitHub renders it. No browser, no dev
-server, no Electron.
+Open any `.md` or README file and read it exactly the way GitHub renders it.
+No browser, no dev server, no Electron. Native Swift, a few megabytes, instant.
 
 [![CI](https://github.com/SolankiYogesh/ReadmeLens/actions/workflows/ci.yml/badge.svg)](https://github.com/SolankiYogesh/ReadmeLens/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/SolankiYogesh/ReadmeLens?color=4493f8)](https://github.com/SolankiYogesh/ReadmeLens/releases/latest)
@@ -24,9 +24,14 @@ server, no Electron.
 
 ## Why
 
-Most Markdown previewers either ship a whole browser engine or render something
-that looks nothing like GitHub. ReadmeLens is a small native app that does one
-job properly.
+macOS ships no Markdown viewer. Double-click a `.md` file and it opens as raw
+text in TextEdit — headings as `#`, links as brackets, tables as pipes. The
+usual workarounds are pushing to GitHub to read it, running a dev server, or
+installing a whole editor just to look at a file.
+
+Most Markdown previewers either ship a browser engine or render something that
+looks nothing like GitHub. ReadmeLens is a small native app that does one job
+properly.
 
 > **Read-only by design.** ReadmeLens opens and renders files. It has no editor
 > and no write entitlement — it *cannot* modify your files. Even PDF export goes
@@ -377,6 +382,34 @@ zips the `.app`, writes a checksum, and publishes it with generated notes.
 git tag v0.2.0
 git push origin v0.2.0
 ```
+
+## FAQ
+
+**How do I open a README.md file on a Mac?**
+macOS has no built-in Markdown viewer, so `.md` opens as plain text. Install
+ReadmeLens and double-click the file, or select it in Finder and press
+<kbd>Space</kbd> for a Quick Look preview.
+
+**Is it free?**
+Yes — free and open source under the MIT licence. No account, no subscription,
+no telemetry, no network calls except loading images a document references.
+
+**Can it preview Markdown in Finder with the Space bar?**
+Yes. A Quick Look extension ships inside the app.
+
+**Does it edit Markdown?**
+No. Read-only by design: no editor, and no write entitlement, so it cannot
+modify your files.
+
+**Does it handle GitHub-flavoured Markdown and raw HTML?**
+Yes — tables, task lists, strikethrough, alert callouts, and the inline HTML
+that four out of five real READMEs contain.
+
+**Is it Electron?**
+No. Native Swift and SwiftUI.
+
+**Which macOS versions are supported?**
+macOS 14 (Sonoma) and later, on both Apple Silicon and Intel.
 
 ## Credits
 
