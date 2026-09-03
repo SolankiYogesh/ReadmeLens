@@ -3,13 +3,66 @@ import UniformTypeIdentifiers
 
 struct ContentView: View {
     @EnvironmentObject private var document: DocumentModel
+    @EnvironmentObject private var search: SearchModel
     @Environment(\.theme) private var theme
 
     var body: some View {
         ZStack {
             theme.canvas.ignoresSafeArea()
 
+            HStack(spacing: 0) {
+                if document.isOutlineVisible {
+                    OutlineSidebar()
+                    Rectangle().fill(theme.border).frame(width: 1)
+                }
+                documentPane
+            }
+        }
+        .navigationTitle(document.title)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.18)) {
+                        document.isOutlineVisible.toggle()
+                    }
+                } label: {
+                    Image(systemName: "sidebar.left")
+                }
+                .help("Toggle outline (⌥⌘S)")
+
+                Button { document.goBack() } label: { Image(systemName: "chevron.left") }
+                    .disabled(!document.canGoBack)
+                    .help("Back")
+
+                Button { document.goForward() } label: { Image(systemName: "chevron.right") }
+                    .disabled(!document.canGoForward)
+                    .help("Forward")
+            }
+            ToolbarItem(placement: .primaryAction) {
+                ThemePickerButton()
+            }
+        }
+        .overlay(alignment: .bottomTrailing) { reloadIndicator }
+        .environment(\.openURL, OpenURLAction { url in handle(url) })
+        .onDrop(of: [.fileURL], isTargeted: nil) { providers in
+            loadDrop(providers)
+        }
+        .task {
+            if document.isEmpty { document.loadWelcome() }
+        }
+        .onChange(of: document.blocks) { _, blocks in
+            search.documentChanged(to: blocks)
+        }
+    }
+
+    private var documentPane: some View {
+        ZStack {
+            theme.canvas
+
             VStack(spacing: 0) {
+                if search.isActive {
+                    SearchBar(search: search)
+                }
                 if document.needsFolderAccess {
                     FolderAccessBanner()
                 }
@@ -39,42 +92,6 @@ struct ContentView: View {
                     DocumentScrollView(blocks: document.blocks)
                 }
             }
-        }
-        .overlay(alignment: .bottomTrailing) { reloadIndicator }
-        .navigationTitle(document.title)
-        .toolbar {
-            ToolbarItemGroup(placement: .navigation) {
-                Button {
-                    document.goBack()
-                } label: {
-                    Image(systemName: "chevron.left")
-                }
-                .disabled(!document.canGoBack)
-                .help("Back")
-
-                Button {
-                    document.goForward()
-                } label: {
-                    Image(systemName: "chevron.right")
-                }
-                .disabled(!document.canGoForward)
-                .help("Forward")
-            }
-            ToolbarItem(placement: .primaryAction) {
-                ThemePickerButton()
-            }
-        }
-        // Links are routed here rather than handed to the system: anchors
-        // scroll, neighbouring Markdown files open in place, and only genuinely
-        // external URLs reach the browser.
-        .environment(\.openURL, OpenURLAction { url in
-            handle(url)
-        })
-        .onDrop(of: [.fileURL], isTargeted: nil) { providers in
-            loadDrop(providers)
-        }
-        .task {
-            if document.isEmpty { document.loadWelcome() }
         }
     }
 
@@ -210,12 +227,10 @@ struct DocumentScrollView: View {
     let blocks: [RenderBlock]
 
     @EnvironmentObject private var document: DocumentModel
+    @EnvironmentObject private var search: SearchModel
     @Environment(\.theme) private var theme
 
     private static let space = "document"
-
-    /// Topmost block currently on screen — the anchor for restoring position.
-    @State private var topVisibleID: String?
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -245,11 +260,22 @@ struct DocumentScrollView: View {
             .background(theme.canvas)
             .onPreferenceChange(VisibleBlocksKey.self) { frames in
                 // The first block whose top edge has not yet passed above the
-                // viewport is what the reader is looking at.
-                topVisibleID = frames
+                // viewport is what the reader is looking at. It drives both
+                // outline highlighting and restoring position after a reload.
+                let top = frames
                     .filter { $0.value >= -40 }
                     .min { $0.value < $1.value }?
                     .key
+                if top != document.topVisibleBlockID {
+                    document.topVisibleBlockID = top
+                }
+            }
+            .onChange(of: search.pendingScroll) { _, target in
+                guard let target else { return }
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    proxy.scrollTo(target, anchor: .center)
+                }
+                search.pendingScroll = nil
             }
             .onChange(of: document.pendingAnchor) { _, anchor in
                 guard let anchor else { return }
@@ -261,7 +287,7 @@ struct DocumentScrollView: View {
             .onChange(of: document.reloadToken) { _, _ in
                 // The list has just been rebuilt; let it lay out before
                 // scrolling, or the target may not exist yet.
-                guard let target = topVisibleID else { return }
+                guard let target = document.topVisibleBlockID else { return }
                 Task { @MainActor in
                     await Task.yield()
                     proxy.scrollTo(target, anchor: .top)

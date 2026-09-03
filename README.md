@@ -34,11 +34,26 @@ job properly.
 - **Native and small.** SwiftUI + AppKit, a ~5 MB app, instant cold start.
 - **GitHub-accurate.** Alerts, task lists, table alignment, heading rules — and
   the raw HTML that four out of five real READMEs depend on.
+- **Outline and search.** A heading sidebar that tracks where you are, and
+  find-in-document that highlights matches in place.
 - **Live preview.** Save in your editor and the view refreshes in place,
   keeping your position in the document.
 - **Syntax highlighting** for ~20 languages, coloured by the active theme.
 - **Nine themes**, switchable from a single dot in the toolbar.
 - **Private.** No network calls, no analytics, no telemetry.
+
+## Outline and search
+
+The sidebar lists every heading — including ones inside centred `<div>` headers
+and `<details>` sections — and marks the section you are currently reading, not
+merely the heading you last clicked. Indentation reflects the heading levels a
+document actually uses, so a README that starts at `##` is not pushed to the
+right for no reason.
+
+`⌘F` searches headings, paragraphs and code blocks. Matches are highlighted
+where they sit, with the current one picked out more brightly, and `⌘G` steps
+through them. A match inside a list item or quote scrolls to the block that
+contains it, since nested content is not addressable on its own.
 
 ## Live preview
 
@@ -137,6 +152,8 @@ swift Tools/GenerateAppIcon.swift Resources/Assets.xcassets/AppIcon.appiconset
 | Follow a link to another file | Click it — it opens in place |
 | Go back / forward | `⌘[` / `⌘]`, or the toolbar arrows |
 | Jump to a heading | Click any `#anchor` link |
+| Find in document | `⌘F`, then `⌘G` / `⇧⌘G` to step through matches |
+| Toggle the outline | `⌥⌘S` |
 | Reload on save | Automatic — toggle with `⇧⌘R` |
 | Switch theme | Click the dot in the toolbar |
 | Copy a code block | Hover it, then click the copy button |
@@ -202,8 +219,8 @@ baseline; inside an HTML block they shift correctly.
 | 4 | Local images, relative links, anchors, Finder open | ✅ Done |
 | 5 | Theme-aware syntax highlighting | ✅ Done |
 | 6 | Auto-reload on save | ✅ Done |
-| 7 | Table-of-contents sidebar, in-document search | ⏳ Next |
-| 8 | Quick Look extension — preview `.md` from Finder | ⏳ Planned |
+| 7 | Table-of-contents sidebar, in-document search | ✅ Done |
+| 8 | Quick Look extension — preview `.md` from Finder | ⏳ Next |
 | 9 | Settings window, custom themes from disk | ⏳ Planned |
 | 10 | Export to PDF, zoom, reading mode | ⏳ Planned |
 

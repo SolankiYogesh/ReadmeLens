@@ -61,6 +61,15 @@ Editors that save by writing a temporary file and renaming it over the original
 are handled too, which is most of them. Toggle the behaviour with
 <kbd>⇧⌘R</kbd>.
 
+## Finding your way
+
+Long READMEs get an **outline** down the left: click a heading to jump, and the
+current section stays marked as you scroll. Toggle it with <kbd>⌥⌘S</kbd>.
+
+Press <kbd>⌘F</kbd> to search the document. Matches are highlighted in place —
+including inside code blocks — with the current one picked out more brightly.
+<kbd>⌘G</kbd> and <kbd>⇧⌘G</kbd> step through them.
+
 ## Formatting
 
 Text can be **bold**, *italic*, ***both at once***, ~~struck through~~, or
@@ -91,7 +100,8 @@ is the sort of thing that quietly breaks in naive renderers.
 - [x] Local images, relative links, anchors
 - [x] Syntax highlighting
 - [x] Auto-reload on save
-- [ ] Table of contents & search
+- [x] Table of contents & search
+- [ ] Quick Look preview
 - [ ] Mermaid diagrams
 
 ## Tables
@@ -104,6 +114,7 @@ is the sort of thing that quietly breaks in naive renderers.
 | Links & local images | Done | 4 |
 | Syntax highlighting | Done | 5 |
 | Auto-reload | Done | 6 |
+| Outline & search | Done | 7 |
 | Search & TOC | Pending | 7 |
 
 ## Code
@@ -157,8 +168,8 @@ than guessing.
 
 ## Roadmap
 
-Next up is a table-of-contents sidebar with in-document search, then a Quick
-Look extension so pressing Space on any `.md` in Finder previews it.
+Next up is a Quick Look extension, so pressing Space on any `.md` in Finder
+previews it without opening the app at all.
 
 ---
 

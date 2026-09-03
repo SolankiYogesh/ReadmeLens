@@ -6,12 +6,14 @@ struct ReadmeLensApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var document = DocumentModel()
     @StateObject private var themeStore = ThemeStore()
+    @StateObject private var search = SearchModel()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(document)
                 .environmentObject(themeStore)
+                .environmentObject(search)
                 .environment(\.theme, themeStore.current)
                 .frame(minWidth: 640, minHeight: 480)
                 .background(themeStore.current.canvas)
@@ -24,7 +26,21 @@ struct ReadmeLensApp: App {
                 Button("Open…") { openPanel() }
                     .keyboardShortcut("o", modifiers: .command)
             }
+            CommandGroup(after: .textEditing) {
+                Button("Find…") { search.open() }
+                    .keyboardShortcut("f", modifiers: .command)
+                Button("Find Next") { search.next() }
+                    .keyboardShortcut("g", modifiers: .command)
+                    .disabled(search.matches.isEmpty)
+                Button("Find Previous") { search.previous() }
+                    .keyboardShortcut("g", modifiers: [.command, .shift])
+                    .disabled(search.matches.isEmpty)
+            }
             CommandGroup(after: .toolbar) {
+                Button(document.isOutlineVisible ? "Hide Outline" : "Show Outline") {
+                    document.isOutlineVisible.toggle()
+                }
+                .keyboardShortcut("s", modifiers: [.command, .option])
                 Toggle("Reload on Save", isOn: $document.isAutoReloadEnabled)
                     .keyboardShortcut("r", modifiers: [.command, .shift])
                 Divider()

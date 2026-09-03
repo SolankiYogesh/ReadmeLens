@@ -9,6 +9,8 @@ struct CodeBlockView: View {
     let source: String
 
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var search: SearchModel
+    @Environment(\.searchBlockID) private var blockID
     @State private var runs: [SyntaxRun]?
     @State private var isHovering = false
     @State private var didCopy = false
@@ -53,21 +55,50 @@ struct CodeBlockView: View {
 
     private var attributed: AttributedString {
         let font = Font.system(size: Typography.code, design: .monospaced)
-        guard let runs else {
-            var plain = AttributedString(source)
-            plain.font = font
-            plain.foregroundColor = theme.codeFg
-            return plain
-        }
+        let ranges = highlightRanges
+        let current = currentRange
+        let pieces = runs ?? [SyntaxRun(text: source, kind: .plain)]
 
         var out = AttributedString()
-        for run in runs {
-            var piece = AttributedString(run.text)
-            piece.font = font
-            piece.foregroundColor = theme.syntaxColor(run.kind)
-            out.append(piece)
+        var offset = 0
+
+        for run in pieces {
+            let colour = runs == nil ? theme.codeFg : theme.syntaxColor(run.kind)
+
+            if ranges.isEmpty {
+                var piece = AttributedString(run.text)
+                piece.font = font
+                piece.foregroundColor = colour
+                out.append(piece)
+            } else {
+                for segment in HighlightSplitter.segments(
+                    text: run.text, offset: offset, ranges: ranges, current: current
+                ) {
+                    var piece = AttributedString(segment.text)
+                    piece.font = font
+                    piece.foregroundColor = colour
+                    if segment.isHighlighted {
+                        piece.backgroundColor = segment.isCurrent
+                            ? theme.searchHitActive : theme.searchHit
+                    }
+                    out.append(piece)
+                }
+            }
+            offset += run.text.count
         }
         return out
+    }
+
+    private var highlightRanges: [Range<Int>] {
+        guard search.isActive, let blockID else { return [] }
+        return search.highlightRanges(for: blockID)
+    }
+
+    private var currentRange: Range<Int>? {
+        guard let blockID, let match = search.currentMatch,
+              match.blockID == blockID
+        else { return nil }
+        return match.range
     }
 
     private func highlight() async {

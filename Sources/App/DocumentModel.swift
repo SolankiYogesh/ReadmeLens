@@ -28,6 +28,17 @@ final class DocumentModel: ObservableObject {
     /// Set briefly after a reload, to acknowledge it in the UI.
     @Published private(set) var didJustReload = false
 
+    /// Topmost block currently on screen. Drives outline highlighting and
+    /// restoring the reading position after a reload.
+    @Published var topVisibleBlockID: String?
+
+    /// Headings of the open document, recomputed whenever it is parsed.
+    @Published private(set) var outline: [OutlineEntry] = []
+
+    @Published var isOutlineVisible: Bool {
+        didSet { UserDefaults.standard.set(isOutlineVisible, forKey: Self.outlineKey) }
+    }
+
     @Published var isAutoReloadEnabled: Bool {
         didSet {
             UserDefaults.standard.set(isAutoReloadEnabled, forKey: Self.autoReloadKey)
@@ -36,6 +47,7 @@ final class DocumentModel: ObservableObject {
     }
 
     private static let autoReloadKey = "autoReloadEnabled"
+    private static let outlineKey = "outlineVisible"
     private var watcher: FileWatcher?
     private var acknowledgeTask: Task<Void, Never>?
 
@@ -51,7 +63,28 @@ final class DocumentModel: ObservableObject {
         if defaults.object(forKey: Self.autoReloadKey) == nil {
             defaults.set(true, forKey: Self.autoReloadKey)
         }
+        if defaults.object(forKey: Self.outlineKey) == nil {
+            defaults.set(true, forKey: Self.outlineKey)
+        }
         isAutoReloadEnabled = defaults.bool(forKey: Self.autoReloadKey)
+        isOutlineVisible = defaults.bool(forKey: Self.outlineKey)
+    }
+
+    /// The heading the reader is currently under — the last one at or above the
+    /// topmost visible block, so the outline tracks position rather than only
+    /// highlighting exact heading hits.
+    var activeOutlineID: String? {
+        guard !outline.isEmpty else { return nil }
+        guard let top = topVisibleBlockID,
+              let index = blocks.firstIndex(where: { $0.scrollID == top })
+        else { return outline.first?.id }
+
+        for candidate in stride(from: index, through: 0, by: -1) {
+            if case .heading = blocks[candidate].kind {
+                return blocks[candidate].scrollID
+            }
+        }
+        return outline.first?.id
     }
 
     var title: String { url?.lastPathComponent ?? "ReadmeLens" }
@@ -225,6 +258,7 @@ final class DocumentModel: ObservableObject {
     func render(_ markdown: String) {
         let document = Document(parsing: normalize(markdown))
         blocks = BlockFlattener.blocks(from: document)
+        outline = blocks.outline
         errorMessage = nil
     }
 

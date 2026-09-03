@@ -11,6 +11,8 @@ struct StyledText: View {
     var color: Color?
 
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var search: SearchModel
+    @Environment(\.searchBlockID) private var blockID
     @EnvironmentObject private var document: DocumentModel
 
     var body: some View {
@@ -19,14 +21,42 @@ struct StyledText: View {
     }
 
     private var attributed: AttributedString {
+        let ranges = highlightRanges
         var out = AttributedString()
+        var offset = 0
+
         for span in inline.spans {
-            out.append(render(span))
+            if ranges.isEmpty {
+                out.append(render(span))
+            } else {
+                for segment in HighlightSplitter.segments(
+                    text: span.text, offset: offset, ranges: ranges, current: currentRange
+                ) {
+                    var piece = span
+                    piece.text = segment.text
+                    out.append(render(piece, highlight: segment))
+                }
+            }
+            offset += span.text.count
         }
         return out
     }
 
-    private func render(_ span: InlineSpan) -> AttributedString {
+    private var highlightRanges: [Range<Int>] {
+        guard search.isActive, let blockID else { return [] }
+        return search.highlightRanges(for: blockID)
+    }
+
+    private var currentRange: Range<Int>? {
+        guard let blockID, let match = search.currentMatch,
+              match.blockID == blockID
+        else { return nil }
+        return match.range
+    }
+
+    private func render(
+        _ span: InlineSpan, highlight: HighlightSplitter.Segment? = nil
+    ) -> AttributedString {
         var piece = AttributedString(span.text)
         let isCode = span.style.contains(.code)
 
@@ -48,6 +78,9 @@ struct StyledText: View {
         }
         if span.style.contains(.strike) {
             piece.strikethroughStyle = .single
+        }
+        if let highlight, highlight.isHighlighted {
+            piece.backgroundColor = highlight.isCurrent ? theme.searchHitActive : theme.searchHit
         }
         // Anchors and relative paths resolve through the document, which
         // turns them into targets the open-URL handler understands.

@@ -22,6 +22,11 @@ struct BlockView: View {
     }
 
     var body: some View {
+        content.environment(\.searchBlockID, block.id)
+    }
+
+    @ViewBuilder
+    private var content: some View {
         switch block.kind {
         case let .heading(level, text, anchor):
             HeadingView(level: level, text: text, anchor: anchor)
