@@ -34,6 +34,8 @@ job properly.
 - **Native and small.** SwiftUI + AppKit, a ~5 MB app, instant cold start.
 - **GitHub-accurate.** Alerts, task lists, table alignment, heading rules — and
   the raw HTML that four out of five real READMEs depend on.
+- **Quick Look.** Press Space on any `.md` in Finder and it renders there,
+  without launching the app.
 - **Outline and search.** A heading sidebar that tracks where you are, and
   find-in-document that highlights matches in place.
 - **Live preview.** Save in your editor and the view refreshes in place,
@@ -41,6 +43,19 @@ job properly.
 - **Syntax highlighting** for ~20 languages, coloured by the active theme.
 - **Nine themes**, switchable from a single dot in the toolbar.
 - **Private.** No network calls, no analytics, no telemetry.
+
+## Quick Look
+
+<img src="docs/screenshot-quicklook.png" width="760" alt="A Markdown file rendered in Finder's Quick Look panel">
+
+Select a `.md` file in Finder and press **Space**. The extension lives inside
+the app bundle and shares its parser, themes, syntax highlighter and block
+renderers — so a preview looks exactly like the app, minus the chrome.
+
+It follows the *system* appearance rather than the theme selected in the app: an
+extension runs in its own sandbox container and cannot read the host app's
+preferences. Sharing them would need an App Group, which in turn needs a real
+signing team.
 
 ## Outline and search
 
@@ -147,6 +162,7 @@ swift Tools/GenerateAppIcon.swift Resources/Assets.xcassets/AppIcon.appiconset
 
 | Action | How |
 |:--|:--|
+| Preview without opening | Select a `.md` in Finder, press `Space` |
 | Open a file | `⌘O`, drop a `.md` on the window, or double-click one in Finder |
 | Open from a terminal | `open -a ReadmeLens README.md` |
 | Follow a link to another file | Click it — it opens in place |
@@ -220,8 +236,8 @@ baseline; inside an HTML block they shift correctly.
 | 5 | Theme-aware syntax highlighting | ✅ Done |
 | 6 | Auto-reload on save | ✅ Done |
 | 7 | Table-of-contents sidebar, in-document search | ✅ Done |
-| 8 | Quick Look extension — preview `.md` from Finder | ⏳ Next |
-| 9 | Settings window, custom themes from disk | ⏳ Planned |
+| 8 | Quick Look extension — preview `.md` from Finder | ✅ Done |
+| 9 | Settings window, custom themes from disk | ⏳ Next |
 | 10 | Export to PDF, zoom, reading mode | ⏳ Planned |
 
 Mermaid and LaTeX were originally scheduled early; measuring the corpus showed

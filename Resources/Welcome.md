@@ -70,6 +70,16 @@ Press <kbd>⌘F</kbd> to search the document. Matches are highlighted in place �
 including inside code blocks — with the current one picked out more brightly.
 <kbd>⌘G</kbd> and <kbd>⇧⌘G</kbd> step through them.
 
+## Quick Look
+
+Select any `.md` file in Finder and press <kbd>Space</kbd> — it renders there,
+without launching this app. The extension ships inside the app bundle and
+shares the same parser, themes and renderers.
+
+It follows your system appearance rather than the theme chosen here: an
+extension runs in its own sandbox container and cannot read the app's
+preferences.
+
 ## Formatting
 
 Text can be **bold**, *italic*, ***both at once***, ~~struck through~~, or
@@ -101,7 +111,8 @@ is the sort of thing that quietly breaks in naive renderers.
 - [x] Syntax highlighting
 - [x] Auto-reload on save
 - [x] Table of contents & search
-- [ ] Quick Look preview
+- [x] Quick Look preview
+- [ ] Settings window & custom themes
 - [ ] Mermaid diagrams
 
 ## Tables
@@ -115,6 +126,7 @@ is the sort of thing that quietly breaks in naive renderers.
 | Syntax highlighting | Done | 5 |
 | Auto-reload | Done | 6 |
 | Outline & search | Done | 7 |
+| Quick Look | Done | 8 |
 | Search & TOC | Pending | 7 |
 
 ## Code
@@ -168,8 +180,8 @@ than guessing.
 
 ## Roadmap
 
-Next up is a Quick Look extension, so pressing Space on any `.md` in Finder
-previews it without opening the app at all.
+Next up is a settings window with typography controls and custom themes loaded
+from disk, then PDF export.
 
 ---
 

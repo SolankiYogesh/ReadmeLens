@@ -29,11 +29,15 @@ targets:
     platform: macOS
     sources:
       - path: Sources
+        excludes:
+          - "QuickLook/**"
       - path: Resources/Assets.xcassets
       - path: Resources/Welcome.md
     dependencies:
       - package: Markdown
         product: Markdown
+      - target: ReadmeLensQuickLook
+        embed: true
     settings:
       base:
         PRODUCT_NAME: ReadmeLens
@@ -43,6 +47,27 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         COMBINE_HIDPI_IMAGES: YES
         ENABLE_APP_SANDBOX: YES
+
+  # Finder's Space-bar preview. Shares the parser, themes and block views;
+  # the app's `@main` is excluded because an extension has its own entry point.
+  ReadmeLensQuickLook:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: Sources
+        excludes:
+          - "App/ReadmeLensApp.swift"
+    dependencies:
+      - package: Markdown
+        product: Markdown
+    settings:
+      base:
+        PRODUCT_NAME: ReadmeLensQuickLook
+        PRODUCT_BUNDLE_IDENTIFIER: io.dhruvex.readmelens.quicklook
+        INFOPLIST_FILE: Resources/QuickLook-Info.plist
+        CODE_SIGN_ENTITLEMENTS: Resources/ReadmeLensQuickLook.entitlements
+        ENABLE_APP_SANDBOX: YES
+        SKIP_INSTALL: YES
 
   ReadmeLensTests:
     type: bundle.unit-test
@@ -63,6 +88,7 @@ schemes:
     build:
       targets:
         ReadmeLens: all
+        ReadmeLensQuickLook: all
         ReadmeLensTests: [test]
     run:
       config: Debug
