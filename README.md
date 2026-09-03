@@ -88,6 +88,11 @@ A sandboxed app needs `com.apple.security.print` to print at all — without it
 macOS refuses with its own "this application does not support printing" alert.
 That entitlement covers printing only; file access remains read-only.
 
+Code blocks and tables scroll horizontally on screen; on paper they lay out
+plainly and long code lines wrap, since a page cannot scroll. Syntax
+highlighting is resolved synchronously for printing, because a render pass runs
+no async work.
+
 One known limitation: pages are sliced at a fixed height, so a line of text can
 be cut across a page break. Making pagination block-aware is the fix, and it is
 not done.

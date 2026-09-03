@@ -13,6 +13,7 @@ struct CodeBlockView: View {
 
     @EnvironmentObject private var search: SearchModel
     @Environment(\.searchBlockID) private var blockID
+    @Environment(\.isPrinting) private var isPrinting
     @State private var runs: [SyntaxRun]?
     @State private var isHovering = false
     @State private var didCopy = false
@@ -32,12 +33,21 @@ struct CodeBlockView: View {
                 Rectangle().fill(theme.border).frame(height: 1)
             }
 
-            ScrollView(.horizontal, showsIndicators: false) {
+            if isPrinting {
+                // Paper cannot scroll, so long lines wrap instead.
                 Text(attributed)
-                    .textSelection(.enabled)
                     .lineSpacing(3)
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(14)
                     .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    Text(attributed)
+                        .textSelection(.enabled)
+                        .lineSpacing(3)
+                        .padding(14)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
         }
         .background(theme.codeBg)
@@ -59,13 +69,18 @@ struct CodeBlockView: View {
         let font = Font.system(size: typography.code, design: .monospaced)
         let ranges = highlightRanges
         let current = currentRange
-        let pieces = runs ?? [SyntaxRun(text: source, kind: .plain)]
+        // `.task` never runs during a render pass, so when printing the
+        // tokens are produced inline. They are cached, so this is cheap.
+        let resolved = runs ?? (isPrinting
+            ? SyntaxHighlighter.runs(for: source, language: language)
+            : nil)
+        let pieces = resolved ?? [SyntaxRun(text: source, kind: .plain)]
 
         var out = AttributedString()
         var offset = 0
 
         for run in pieces {
-            let colour = runs == nil ? theme.codeFg : theme.syntaxColor(run.kind)
+            let colour = resolved == nil ? theme.codeFg : theme.syntaxColor(run.kind)
 
             if ranges.isEmpty {
                 var piece = AttributedString(run.text)

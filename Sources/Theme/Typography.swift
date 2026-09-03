@@ -45,3 +45,20 @@ extension EnvironmentValues {
         set { self[TypographyKey.self] = newValue }
     }
 }
+
+/// True while the document is being rendered for paper.
+///
+/// `ImageRenderer` does not render a `ScrollView`'s content — it comes out
+/// empty — so every view that scrolls on screen must lay out plainly when
+/// printing. Async work does not run either, so anything loaded in a `.task`
+/// has to be resolved synchronously.
+private struct PrintingKey: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    var isPrinting: Bool {
+        get { self[PrintingKey.self] }
+        set { self[PrintingKey.self] = newValue }
+    }
+}

@@ -8,6 +8,7 @@ import SwiftUI
 struct MarkdownTableView: View {
     let model: TableModel
     @Environment(\.theme) private var theme
+    @Environment(\.isPrinting) private var isPrinting
     @Environment(\.typography) private var typography
 
     private var columnCount: Int {
@@ -15,8 +16,17 @@ struct MarkdownTableView: View {
     }
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            Grid(alignment: .topLeading, horizontalSpacing: 0, verticalSpacing: 0) {
+        Group {
+            if isPrinting {
+                grid
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) { grid }
+            }
+        }
+    }
+
+    private var grid: some View {
+        Grid(alignment: .topLeading, horizontalSpacing: 0, verticalSpacing: 0) {
                 if model.hasHeader {
                     GridRow {
                         ForEach(0..<columnCount, id: \.self) { column in
@@ -36,9 +46,8 @@ struct MarkdownTableView: View {
                     .background(index.isMultiple(of: 2) ? Color.clear : theme.tableStripe)
                 }
             }
-            .overlay(RoundedRectangle(cornerRadius: 6).stroke(theme.border, lineWidth: 1))
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-        }
+        .overlay(RoundedRectangle(cornerRadius: 6).stroke(theme.border, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 
     private func text(_ cells: [InlineText], _ column: Int) -> InlineText {

@@ -71,6 +71,7 @@ enum DocumentPrinter {
         let root = PrintableDocument(blocks: blocks)
             .environment(\.theme, printTheme)
             .environment(\.typography, typography)
+            .environment(\.isPrinting, true)
             .environmentObject(document)
             .environmentObject(search)
             .frame(width: contentWidth)

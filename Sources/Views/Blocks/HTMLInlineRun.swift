@@ -317,6 +317,7 @@ struct HTMLTableView: View {
     let element: HTMLElement
     @Environment(\.theme) private var theme
     @Environment(\.typography) private var typography
+    @Environment(\.isPrinting) private var isPrinting
 
     private var rows: [[HTMLElement]] {
         var out: [[HTMLElement]] = []
@@ -340,9 +341,16 @@ struct HTMLTableView: View {
     }
 
     var body: some View {
+        if isPrinting {
+            grid
+        } else {
+            ScrollView(.horizontal, showsIndicators: false) { grid }
+        }
+    }
+
+    private var grid: some View {
         let rows = rows
-        ScrollView(.horizontal, showsIndicators: false) {
-            VStack(spacing: 0) {
+        return VStack(spacing: 0) {
                 ForEach(Array(rows.enumerated()), id: \.offset) { index, cells in
                     if index > 0 { Divider().overlay(theme.border) }
                     HStack(alignment: .top, spacing: 0) {
@@ -356,8 +364,7 @@ struct HTMLTableView: View {
                     .background(cells.first?.tag == "th" ? theme.tableHeaderBg : .clear)
                 }
             }
-            .overlay(RoundedRectangle(cornerRadius: 6).stroke(theme.border, lineWidth: 1))
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-        }
+        .overlay(RoundedRectangle(cornerRadius: 6).stroke(theme.border, lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 }

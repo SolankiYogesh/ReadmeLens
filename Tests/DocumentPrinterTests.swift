@@ -64,6 +64,47 @@ final class DocumentPrinterTests: XCTestCase {
         XCTAssertEqual(bounds.height, 792, accuracy: 1)
     }
 
+    /// Views that scroll on screen — code blocks and tables — render empty
+    /// under ImageRenderer unless the print path lays them out plainly. A
+    /// document made mostly of code printed as blank pages because of it.
+    func testCodeBlockContentActuallyPrints() throws {
+        let code = (1...80).map { "let value\($0) = compute(\($0))  // step \($0)" }
+            .joined(separator: "\n")
+        let document = try XCTUnwrap(pdf(for: "```swift\n\(code)\n```"))
+
+        let text = (0..<document.pageCount)
+            .compactMap { document.page(at: $0)?.string }
+            .joined()
+        XCTAssertTrue(text.contains("value1"), "code block body missing from the PDF")
+        XCTAssertTrue(text.contains("value80"), "later code lines missing from the PDF")
+    }
+
+    /// The failing document was a single enormous fenced block, so the very
+    /// first page carrying only the language tag was the visible symptom.
+    func testFirstPageOfACodeOnlyDocumentIsNotJustTheLanguageTag() throws {
+        let code = (1...80).map { "line\($0)()" }.joined(separator: "\n")
+        let document = try XCTUnwrap(pdf(for: "```ts\n\(code)\n```"))
+        let first = (document.page(at: 0)?.string ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertGreaterThan(first.count, 20, "page 1 held only: \(first)")
+        XCTAssertTrue(first.contains("line1"), "page 1 held only: \(first)")
+    }
+
+    func testTableContentActuallyPrints() throws {
+        let source = """
+        | Feature | Status |
+        |:--------|:------:|
+        | Alpha   | Done   |
+        | Bravo   | Ready  |
+        """
+        let document = try XCTUnwrap(pdf(for: source))
+        let text = (0..<document.pageCount)
+            .compactMap { document.page(at: $0)?.string }
+            .joined()
+        XCTAssertTrue(text.contains("Alpha"), "table body missing from the PDF")
+        XCTAssertTrue(text.contains("Bravo"), "table body missing from the PDF")
+    }
+
     /// A dark reading theme must not print as a dark page.
     func testDarkThemesPrintOnALightGround() throws {
         let blocks = BlockFlattener.blocks(from: Document(parsing: "# Title"))

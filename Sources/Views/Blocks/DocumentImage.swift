@@ -37,6 +37,7 @@ struct DocumentImage: View {
     @EnvironmentObject private var document: DocumentModel
     @Environment(\.theme) private var theme
     @Environment(\.typography) private var typography
+    @Environment(\.isPrinting) private var isPrinting
 
     @State private var image: NSImage?
     @State private var failed = false
@@ -44,7 +45,10 @@ struct DocumentImage: View {
     private var url: URL? { document.resolveImageURL(source) }
 
     var body: some View {
-        Group {
+        // A render pass runs no async work, so printing uses whatever is
+        // already cached and falls back to the placeholder otherwise.
+        let image = self.image ?? (isPrinting ? url.flatMap { ImageCache.shared.cached($0) } : nil)
+        return Group {
             if let image {
                 let size = displaySize(for: image)
                 Image(nsImage: image)
