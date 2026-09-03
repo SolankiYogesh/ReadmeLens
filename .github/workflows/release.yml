@@ -75,7 +75,7 @@ jobs:
           codesign -d --entitlements - --xml "$APP" 2>/dev/null \
             | grep -q "com.apple.security.app-sandbox" \
             || { echo "::error::app has no entitlements"; exit 1; }
-          echo "signed and entitled""
+          echo "signed and entitled"
 
       - name: Package
         id: package
