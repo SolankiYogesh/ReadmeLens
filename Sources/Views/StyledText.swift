@@ -11,6 +11,7 @@ struct StyledText: View {
     var color: Color?
 
     @Environment(\.theme) private var theme
+    @EnvironmentObject private var document: DocumentModel
 
     var body: some View {
         Text(attributed)
@@ -48,12 +49,9 @@ struct StyledText: View {
         if span.style.contains(.strike) {
             piece.strikethroughStyle = .single
         }
-        // Only absolute destinations become live links. Relative and anchor
-        // targets need a document base URL to resolve against, which arrives
-        // with remote loading and in-document navigation.
-        if let destination = span.link,
-           let url = URL(string: destination),
-           url.scheme != nil {
+        // Anchors and relative paths resolve through the document, which
+        // turns them into targets the open-URL handler understands.
+        if let destination = span.link, let url = document.resolveLinkURL(destination) {
             piece.link = url
         }
         return piece

@@ -65,4 +65,14 @@ indirect enum BlockKind: Hashable {
 struct RenderBlock: Identifiable, Hashable {
     let id: Int
     let kind: BlockKind
+
+    /// Identity used by the scrolling list.
+    ///
+    /// Headings key off their anchor so `[jump](#install)` can address them;
+    /// everything else uses its ordinal. The `#` prefix keeps the two spaces
+    /// from ever colliding.
+    var scrollID: String {
+        if case let .heading(_, _, anchor) = kind { return "#\(anchor)" }
+        return "b\(id)"
+    }
 }

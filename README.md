@@ -100,9 +100,24 @@ swift Tools/GenerateAppIcon.swift Resources/Assets.xcassets/AppIcon.appiconset
 
 | Action | How |
 |:--|:--|
-| Open a file | `⌘O`, or drop a `.md` file on the window |
+| Open a file | `⌘O`, drop a `.md` on the window, or double-click one in Finder |
+| Open from a terminal | `open -a ReadmeLens README.md` |
+| Follow a link to another file | Click it — it opens in place |
+| Go back / forward | `⌘[` / `⌘]`, or the toolbar arrows |
+| Jump to a heading | Click any `#anchor` link |
 | Switch theme | Click the dot in the toolbar |
 | Copy a code block | Hover it, then click the copy button |
+
+### Local files and the sandbox
+
+ReadmeLens is sandboxed, so opening a file grants access to *that file only* —
+not the folder around it. The first time a document references a local image or
+links to a sibling file, a banner offers a one-time **Grant Access** for the
+folder. The grant is remembered, and covers everything beneath it, so opening a
+repo root once is enough for the whole project.
+
+Relative paths are confined to the document's folder; a link that would escape
+it is refused.
 
 ## Supported Markdown
 
@@ -115,7 +130,9 @@ CommonMark plus GitHub-Flavored Markdown, parsed with
 - Tables with per-column alignment
 - Block quotes, and `> [!NOTE]` alerts as native callouts
 - Fenced code blocks with a language tag and copy button
-- Images, autolinks, CRLF and legacy line endings
+- Images — remote, and local ones resolved against the document's folder
+- Links — external, in-page anchors, and relative paths to other documents
+- Autolinks, CRLF and legacy line endings
 
 ### HTML
 
@@ -149,11 +166,11 @@ baseline; inside an HTML block they shift correctly.
 | 1 | Markdown parse pipeline → identified render blocks | ✅ Done |
 | 2 | Theme token engine, nine themes, toolbar switcher | ✅ Done |
 | 3 | Safe HTML subset, image loading | ✅ Done |
-| 4 | Theme-aware syntax highlighting | ⏳ Next |
-| 5 | Finder integration, auto-reload on save | ⏳ Planned |
-| 6 | Table-of-contents sidebar, in-document search | ⏳ Planned |
-| 7 | Quick Look extension — preview `.md` from Finder | ⏳ Planned |
-| 8 | Relative-link navigation, local image folder access | ⏳ Planned |
+| 4 | Local images, relative links, anchors, Finder open | ✅ Done |
+| 5 | Theme-aware syntax highlighting | ⏳ Next |
+| 6 | Auto-reload on save | ⏳ Planned |
+| 7 | Table-of-contents sidebar, in-document search | ⏳ Planned |
+| 8 | Quick Look extension — preview `.md` from Finder | ⏳ Planned |
 | 9 | Settings window, custom themes from disk | ⏳ Planned |
 | 10 | Export to PDF, zoom, reading mode | ⏳ Planned |
 

@@ -14,6 +14,9 @@ final class ImageCache {
     func hasFailed(_ url: URL) -> Bool { failures.contains(url) }
     func store(_ image: NSImage, for url: URL) { images[url] = image }
     func markFailed(_ url: URL) { failures.insert(url) }
+
+    /// Called after a folder grant so previously unreadable local images retry.
+    func clearFailures() { failures.removeAll() }
 }
 
 /// One image from a document, local or remote.

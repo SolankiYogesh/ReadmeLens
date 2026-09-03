@@ -9,30 +9,93 @@ struct ContentView: View {
         ZStack {
             theme.canvas.ignoresSafeArea()
 
-            if let message = document.errorMessage {
-                MessageView(systemImage: "exclamationmark.triangle", title: "Couldn’t open file", detail: message)
-            } else if document.isEmpty {
-                MessageView(
-                    systemImage: "doc.richtext",
-                    title: "Open a Markdown file",
-                    detail: "Press ⌘O, or drop a .md file anywhere in this window."
-                )
-            } else {
-                DocumentScrollView(blocks: document.blocks)
+            VStack(spacing: 0) {
+                if document.needsFolderAccess {
+                    FolderAccessBanner()
+                }
+
+                if let message = document.errorMessage {
+                    VStack(spacing: 14) {
+                        MessageView(
+                            systemImage: document.needsAccessToOpen
+                                ? "folder.badge.questionmark" : "exclamationmark.triangle",
+                            title: document.needsAccessToOpen
+                                ? "Permission needed" : "Couldn’t open file",
+                            detail: message
+                        )
+                        if document.needsAccessToOpen {
+                            GrantAccessButton(label: "Grant Access…")
+                        }
+                    }
+                    .frame(maxHeight: .infinity)
+                } else if document.isEmpty {
+                    MessageView(
+                        systemImage: "doc.richtext",
+                        title: "Open a Markdown file",
+                        detail: "Press ⌘O, or drop a .md file anywhere in this window."
+                    )
+                    .frame(maxHeight: .infinity)
+                } else {
+                    DocumentScrollView(blocks: document.blocks)
+                }
             }
         }
         .navigationTitle(document.title)
         .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                Button {
+                    document.goBack()
+                } label: {
+                    Image(systemName: "chevron.left")
+                }
+                .disabled(!document.canGoBack)
+                .help("Back")
+
+                Button {
+                    document.goForward()
+                } label: {
+                    Image(systemName: "chevron.right")
+                }
+                .disabled(!document.canGoForward)
+                .help("Forward")
+            }
             ToolbarItem(placement: .primaryAction) {
                 ThemePickerButton()
             }
         }
+        // Links are routed here rather than handed to the system: anchors
+        // scroll, neighbouring Markdown files open in place, and only genuinely
+        // external URLs reach the browser.
+        .environment(\.openURL, OpenURLAction { url in
+            handle(url)
+        })
         .onDrop(of: [.fileURL], isTargeted: nil) { providers in
             loadDrop(providers)
         }
         .task {
             if document.isEmpty { document.loadWelcome() }
         }
+    }
+
+    private func handle(_ url: URL) -> OpenURLAction.Result {
+        if url.scheme == DocumentModel.anchorScheme {
+            let slug = (url.host ?? "").removingPercentEncoding ?? url.host ?? ""
+            if !slug.isEmpty { document.pendingAnchor = slug }
+            return .handled
+        }
+
+        if url.isFileURL {
+            let ext = url.pathExtension.lowercased()
+            if DocumentModel.markdownExtensions.contains(ext) {
+                document.open(url)
+                return .handled
+            }
+            // Anything else is for the system to deal with.
+            NSWorkspace.shared.open(url)
+            return .handled
+        }
+
+        return .systemAction
     }
 
     private func loadDrop(_ providers: [NSItemProvider]) -> Bool {
@@ -45,24 +108,107 @@ struct ContentView: View {
     }
 }
 
+/// Offers the one-time folder grant the sandbox requires before local images
+/// and sibling documents can be read.
+struct FolderAccessBanner: View {
+    @EnvironmentObject private var document: DocumentModel
+    @Environment(\.theme) private var theme
+
+    private var folderName: String {
+        document.baseDirectory?.lastPathComponent ?? "this folder"
+    }
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "folder.badge.questionmark")
+                .foregroundStyle(theme.alertColor(.note))
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text("This document links to local files")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(theme.fg)
+                Text("Grant access to “\(folderName)” to show images and follow links.")
+                    .font(.system(size: 11))
+                    .foregroundStyle(theme.fgMuted)
+            }
+
+            Spacer(minLength: 8)
+
+            GrantAccessButton(label: "Grant Access…", small: true)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .background(theme.canvasSubtle)
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(theme.border).frame(height: 1)
+        }
+    }
+
+}
+
+/// Asks for a one-time folder grant and hands it to the document.
+struct GrantAccessButton: View {
+    let label: String
+    var small = false
+
+    @EnvironmentObject private var document: DocumentModel
+
+    var body: some View {
+        Button(label) { grant() }
+            .controlSize(small ? .small : .regular)
+    }
+
+    private func grant() {
+        guard let directory = document.baseDirectory else { return }
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.directoryURL = directory
+        panel.message = "Grant ReadmeLens read access to this folder."
+        panel.prompt = "Grant Access"
+
+        guard panel.runModal() == .OK, let chosen = panel.url else { return }
+        if FolderAccessStore.shared.store(chosen) {
+            document.folderAccessGranted()
+        }
+    }
+}
+
 /// The scrolling document body.
 struct DocumentScrollView: View {
     let blocks: [RenderBlock]
+
+    @EnvironmentObject private var document: DocumentModel
     @Environment(\.theme) private var theme
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 14) {
-                ForEach(blocks) { block in
-                    BlockView(block: block)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 14) {
+                    ForEach(blocks, id: \.scrollID) { block in
+                        BlockView(block: block)
+                    }
                 }
+                .padding(.horizontal, 32)
+                .padding(.vertical, 28)
+                .frame(maxWidth: Typography.contentMaxWidth, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .center)
             }
-            .padding(.horizontal, 32)
-            .padding(.vertical, 28)
-            .frame(maxWidth: Typography.contentMaxWidth, alignment: .leading)
-            .frame(maxWidth: .infinity, alignment: .center)
+            .background(theme.canvas)
+            .onChange(of: document.pendingAnchor) { _, anchor in
+                guard let anchor else { return }
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    proxy.scrollTo("#\(anchor)", anchor: .top)
+                }
+                document.pendingAnchor = nil
+            }
+            .onChange(of: document.url) { _, _ in
+                // A freshly opened document starts at the top.
+                guard let first = blocks.first else { return }
+                proxy.scrollTo(first.scrollID, anchor: .top)
+            }
         }
-        .background(theme.canvas)
     }
 }
 

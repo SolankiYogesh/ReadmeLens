@@ -44,6 +44,16 @@ Click the heading above to fold this away again.
 Nothing here is executed. `<script>`, `<style>` and `<iframe>` are discarded
 outright, and no web view is involved.
 
+## Navigation
+
+Links to other files open in place — press <kbd>⌘[</kbd> to go back and
+<kbd>⌘]</kbd> to go forward, or use the toolbar arrows. Links to a heading
+scroll there without leaving the document.
+
+Local images resolve against the folder the document lives in. Because the app
+is sandboxed, the first document that needs it will offer a one-time folder
+grant.
+
 ## Formatting
 
 Text can be **bold**, *italic*, ***both at once***, ~~struck through~~, or
@@ -71,6 +81,7 @@ is the sort of thing that quietly breaks in naive renderers.
 - [x] Theme token system
 - [x] GitHub Dark and eight more themes
 - [x] Inline and block HTML
+- [x] Local images, relative links, anchors
 - [ ] Syntax highlighting
 - [ ] Mermaid diagrams
 
@@ -81,6 +92,7 @@ is the sort of thing that quietly breaks in naive renderers.
 | Block parsing | Done | 1 |
 | Themes (9) | Done | 2 |
 | HTML rendering | Done | 3 |
+| Links & local images | Done | 4 |
 | Highlighting | Pending | 3 |
 | Diagrams | Pending | 4 |
 | Search & TOC | Pending | 5 |
