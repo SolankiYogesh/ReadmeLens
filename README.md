@@ -176,8 +176,9 @@ Grab the latest `.zip` from the
 [**Releases**](https://github.com/SolankiYogesh/ReadmeLens/releases/latest)
 page, unarchive it, and drag **ReadmeLens.app** into `/Applications`.
 
-Builds are unsigned, so macOS blocks them on first launch. Right-click the app
-and choose **Open**, then confirm — or clear the quarantine flag:
+Builds are ad-hoc signed rather than notarised, so macOS blocks them on first
+launch. Right-click the app and choose **Open**, then confirm — or clear the
+quarantine flag:
 
 ```bash
 xattr -dr com.apple.quarantine /Applications/ReadmeLens.app

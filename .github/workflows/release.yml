@@ -49,15 +49,33 @@ jobs:
             -destination 'generic/platform=macOS' \
             -derivedDataPath build \
             MARKETING_VERSION="${{ steps.version.outputs.version }}" \
-            CODE_SIGNING_ALLOWED=NO \
             build
 
-      - name: Verify the app launches as a bundle
+      - name: Verify the bundle is signed and entitled
         run: |
           APP="build/Build/Products/Release/ReadmeLens.app"
-          test -d "$APP" || { echo "::error::no .app produced"; exit 1; }
+          APPEX="$APP/Contents/PlugIns/ReadmeLensQuickLook.appex"
+          test -d "$APP"   || { echo "::error::no .app produced"; exit 1; }
+          test -d "$APPEX" || { echo "::error::Quick Look extension missing"; exit 1; }
           test -f "$APP/Contents/Resources/AppIcon.icns" || echo "::warning::app icon missing"
           /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Contents/Info.plist"
+
+          # Building with CODE_SIGNING_ALLOWED=NO leaves a linker-signed binary
+          # identified by product name, with no entitlements. macOS then
+          # refuses to register the Quick Look extension and the sandbox and
+          # print entitlements are simply absent. Fail the build rather than
+          # shipping that again.
+          for bundle in "$APP" "$APPEX"; do
+            id=$(codesign -dv "$bundle" 2>&1 | sed -n 's/^Identifier=//p')
+            case "$id" in
+              io.dhruvex.readmelens*) ;;
+              *) echo "::error::$bundle signed as '$id', expected a bundle identifier"; exit 1 ;;
+            esac
+          done
+          codesign -d --entitlements - --xml "$APP" 2>/dev/null \
+            | grep -q "com.apple.security.app-sandbox" \
+            || { echo "::error::app has no entitlements"; exit 1; }
+          echo "signed and entitled""
 
       - name: Package
         id: package
