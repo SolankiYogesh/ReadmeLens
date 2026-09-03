@@ -15,9 +15,6 @@ your files.
 > Click the coloured dot in the toolbar to switch themes. Nine ship today, and
 > the dot always wears the current theme's accent colour.
 
-> [!WARNING]
-> Syntax highlighting is not wired up yet — see the roadmap below.
-
 ## HTML in READMEs
 
 Four out of five real-world READMEs use raw HTML — centred logos, badge rows,
@@ -82,7 +79,8 @@ is the sort of thing that quietly breaks in naive renderers.
 - [x] GitHub Dark and eight more themes
 - [x] Inline and block HTML
 - [x] Local images, relative links, anchors
-- [ ] Syntax highlighting
+- [x] Syntax highlighting
+- [ ] Auto-reload on save
 - [ ] Mermaid diagrams
 
 ## Tables
@@ -93,29 +91,52 @@ is the sort of thing that quietly breaks in naive renderers.
 | Themes (9) | Done | 2 |
 | HTML rendering | Done | 3 |
 | Links & local images | Done | 4 |
-| Highlighting | Pending | 3 |
-| Diagrams | Pending | 4 |
-| Search & TOC | Pending | 5 |
+| Syntax highlighting | Done | 5 |
+| Auto-reload | Pending | 6 |
+| Search & TOC | Pending | 7 |
 
 ## Code
 
-Fenced blocks keep their language tag and reveal a copy button on hover.
+Fenced blocks keep their language tag, colour themselves from the active theme,
+and reveal a copy button on hover.
 
 ```swift
-struct Theme: Identifiable, Equatable {
-    let id: String
-    let name: String
-    let appearance: ThemeAppearance
+/// Resolves a token kind to a colour from the active theme.
+func syntaxColor(_ kind: TokenKind) -> Color {
+    let fallback = 0xE6EDF3
+    return syntax[kind] ?? Color(hex: fallback)
+}
+```
+
+```python
+def summarise(counts: dict[str, int], limit: float = 0.5) -> list[str]:
+    # keep only the entries worth reporting
+    return [name for name, n in counts.items() if n > limit]
+```
+
+```typescript
+export async function load(url: string): Promise<Theme[]> {
+  const response = await fetch(url);   // network
+  if (!response.ok) throw new Error(`failed: ${response.status}`);
+  return response.json();
 }
 ```
 
 ```bash
-xcodebuild -project ReadmeLens.xcodeproj -scheme ReadmeLens build
+# build and run the tests
+xcodebuild -project ReadmeLens.xcodeproj -scheme ReadmeLens test
 ```
 
 ```json
-{ "theme": "github-dark", "fontSize": 15 }
+{ "theme": "github-dark", "fontSize": 15, "followSystem": false }
 ```
+
+```sql
+SELECT name, count(*) AS uses FROM themes WHERE active = true GROUP BY name;
+```
+
+Around twenty languages are recognised. An unknown tag renders plain rather
+than guessing.
 
 ## Quotes
 
@@ -125,9 +146,9 @@ xcodebuild -project ReadmeLens.xcodeproj -scheme ReadmeLens build
 
 ## Roadmap
 
-Next up is a theme-aware syntax highlighter, then Finder integration and
-auto-reload on save, a table-of-contents sidebar with in-document search, and a
-Quick Look extension so pressing Space on any `.md` in Finder previews it.
+Next up is auto-reload on save, then a table-of-contents sidebar with
+in-document search, and a Quick Look extension so pressing Space on any `.md`
+in Finder previews it.
 
 ---
 

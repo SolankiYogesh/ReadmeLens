@@ -34,8 +34,25 @@ job properly.
 - **Native and small.** SwiftUI + AppKit, a ~5 MB app, instant cold start.
 - **GitHub-accurate.** Alerts, task lists, table alignment, heading rules — and
   the raw HTML that four out of five real READMEs depend on.
+- **Syntax highlighting** for ~20 languages, coloured by the active theme.
 - **Nine themes**, switchable from a single dot in the toolbar.
 - **Private.** No network calls, no analytics, no telemetry.
+
+## Syntax highlighting
+
+<img src="docs/screenshot-syntax.png" width="880" alt="Swift and Python code blocks with syntax highlighting">
+
+Around twenty languages are recognised: Swift, JavaScript/TypeScript (and JSX),
+Python, Go, Rust, Java, Kotlin, C/C++/C#, PHP, Ruby, Dart, Scala, shell, SQL,
+JSON, YAML/TOML, CSS/SCSS and HTML/XML.
+
+The highlighter emits *token kinds* — keyword, string, comment, function, type
+— and the theme maps those to colours. That is why every theme colours code
+correctly without the highlighter knowing any of them exist. An unrecognised
+language tag renders plain rather than guessing.
+
+Tokenising runs off the main thread and results are cached, so scrolling past a
+long block does not re-tokenise it.
 
 ## Themes
 
@@ -129,7 +146,7 @@ CommonMark plus GitHub-Flavored Markdown, parsed with
 - Bullet, ordered, nested and task lists
 - Tables with per-column alignment
 - Block quotes, and `> [!NOTE]` alerts as native callouts
-- Fenced code blocks with a language tag and copy button
+- Fenced code blocks with a language tag, syntax highlighting and copy button
 - Images — remote, and local ones resolved against the document's folder
 - Links — external, in-page anchors, and relative paths to other documents
 - Autolinks, CRLF and legacy line endings
@@ -167,8 +184,8 @@ baseline; inside an HTML block they shift correctly.
 | 2 | Theme token engine, nine themes, toolbar switcher | ✅ Done |
 | 3 | Safe HTML subset, image loading | ✅ Done |
 | 4 | Local images, relative links, anchors, Finder open | ✅ Done |
-| 5 | Theme-aware syntax highlighting | ⏳ Next |
-| 6 | Auto-reload on save | ⏳ Planned |
+| 5 | Theme-aware syntax highlighting | ✅ Done |
+| 6 | Auto-reload on save | ⏳ Next |
 | 7 | Table-of-contents sidebar, in-document search | ⏳ Planned |
 | 8 | Quick Look extension — preview `.md` from Finder | ⏳ Planned |
 | 9 | Settings window, custom themes from disk | ⏳ Planned |

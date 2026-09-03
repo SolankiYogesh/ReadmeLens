@@ -1,14 +1,15 @@
 import SwiftUI
 
-/// A fenced code block with a language tag and a hover-revealed copy button.
+/// A fenced code block: language tag, syntax colouring, and a copy button.
 ///
-/// Text is drawn unhighlighted for now; the highlighter will supply token kinds
-/// that the theme maps to colours, so this view will not need to change shape.
+/// Tokenising runs off the main thread and the result is cached, so scrolling
+/// past a long block does not re-tokenise it.
 struct CodeBlockView: View {
     let language: String?
     let source: String
 
     @Environment(\.theme) private var theme
+    @State private var runs: [SyntaxRun]?
     @State private var isHovering = false
     @State private var didCopy = false
 
@@ -28,9 +29,7 @@ struct CodeBlockView: View {
             }
 
             ScrollView(.horizontal, showsIndicators: false) {
-                Text(source)
-                    .font(.system(size: Typography.code, design: .monospaced))
-                    .foregroundStyle(theme.codeFg)
+                Text(attributed)
                     .textSelection(.enabled)
                     .lineSpacing(3)
                     .padding(14)
@@ -42,6 +41,46 @@ struct CodeBlockView: View {
         .overlay(RoundedRectangle(cornerRadius: 6).stroke(theme.border, lineWidth: 1))
         .overlay(alignment: .topTrailing) { copyButton }
         .onHover { isHovering = $0 }
+        .task(id: TaskKey(source: source, language: language)) { await highlight() }
+    }
+
+    /// Re-tokenise only when the source or language actually changes; a theme
+    /// change just recolours the runs already computed.
+    private struct TaskKey: Equatable {
+        let source: String
+        let language: String?
+    }
+
+    private var attributed: AttributedString {
+        let font = Font.system(size: Typography.code, design: .monospaced)
+        guard let runs else {
+            var plain = AttributedString(source)
+            plain.font = font
+            plain.foregroundColor = theme.codeFg
+            return plain
+        }
+
+        var out = AttributedString()
+        for run in runs {
+            var piece = AttributedString(run.text)
+            piece.font = font
+            piece.foregroundColor = theme.syntaxColor(run.kind)
+            out.append(piece)
+        }
+        return out
+    }
+
+    private func highlight() async {
+        guard SyntaxHighlighter.canHighlight(language) else {
+            runs = nil
+            return
+        }
+        let source = self.source
+        let language = self.language
+        let computed = await Task.detached(priority: .userInitiated) {
+            SyntaxHighlighter.runs(for: source, language: language)
+        }.value
+        runs = computed
     }
 
     @ViewBuilder
