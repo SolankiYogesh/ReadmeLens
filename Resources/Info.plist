@@ -22,11 +22,10 @@
     <dict>
       <key>CFBundleTypeName</key>               <string>Markdown Document</string>
       <key>CFBundleTypeRole</key>               <string>Viewer</string>
-      <key>LSHandlerRank</key>                  <string>Alternate</string>
+      <key>LSHandlerRank</key>                  <string>Default</string>
       <key>LSItemContentTypes</key>
       <array>
         <string>net.daringfireball.markdown</string>
-        <string>public.plain-text</string>
       </array>
     </dict>
   </array>
@@ -43,7 +42,7 @@
         <key>public.filename-extension</key>
         <array>
           <string>md</string><string>markdown</string><string>mdown</string>
-          <string>mkd</string><string>mdtext</string><string>text</string>
+          <string>mkd</string><string>mdtext</string>
         </array>
       </dict>
     </dict>

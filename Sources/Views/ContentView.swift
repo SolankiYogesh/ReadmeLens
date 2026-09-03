@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 struct ContentView: View {
     @EnvironmentObject private var document: DocumentModel
     @EnvironmentObject private var search: SearchModel
+    @EnvironmentObject private var defaultApp: DefaultAppCoordinator
     @Environment(\.theme) private var theme
     @Environment(\.typography) private var typography
 
@@ -71,6 +72,9 @@ struct ContentView: View {
             VStack(spacing: 0) {
                 if search.isActive {
                     SearchBar(search: search)
+                }
+                if defaultApp.shouldOffer || defaultApp.isRunningFromTemporaryLocation {
+                    DefaultAppBanner()
                 }
                 if document.needsFolderAccess {
                     FolderAccessBanner()
@@ -238,6 +242,7 @@ struct DocumentScrollView: View {
 
     @EnvironmentObject private var document: DocumentModel
     @EnvironmentObject private var search: SearchModel
+    @EnvironmentObject private var defaultApp: DefaultAppCoordinator
     @Environment(\.theme) private var theme
     @Environment(\.typography) private var typography
 

@@ -8,6 +8,7 @@ struct ReadmeLensApp: App {
     @StateObject private var themeStore = ThemeStore()
     @StateObject private var search = SearchModel()
     @StateObject private var settings = AppSettings()
+    @StateObject private var defaultApp = DefaultAppCoordinator()
 
     var body: some Scene {
         WindowGroup {
@@ -16,6 +17,7 @@ struct ReadmeLensApp: App {
                 .environmentObject(themeStore)
                 .environmentObject(search)
                 .environmentObject(settings)
+                .environmentObject(defaultApp)
                 .environment(\.theme, themeStore.current)
                 .environment(\.typography, settings.typography)
                 .frame(minWidth: 640, minHeight: 480)
@@ -46,6 +48,13 @@ struct ReadmeLensApp: App {
             CommandGroup(replacing: .newItem) {
                 Button("Open…") { openPanel() }
                     .keyboardShortcut("o", modifiers: .command)
+                Divider()
+                Button(defaultApp.isDefault
+                       ? "ReadmeLens Opens Markdown Files"
+                       : "Open Markdown Files with ReadmeLens…") {
+                    Task { await defaultApp.makeDefault() }
+                }
+                .disabled(defaultApp.isDefault)
             }
             CommandGroup(after: .textEditing) {
                 Button("Find…") { search.open() }
@@ -93,6 +102,7 @@ struct ReadmeLensApp: App {
             SettingsView()
                 .environmentObject(themeStore)
                 .environmentObject(settings)
+                .environmentObject(defaultApp)
         }
     }
 

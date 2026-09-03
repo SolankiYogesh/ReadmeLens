@@ -183,6 +183,19 @@ and choose **Open**, then confirm — or clear the quarantine flag:
 xattr -dr com.apple.quarantine /Applications/ReadmeLens.app
 ```
 
+### Make it the default Markdown viewer
+
+On first launch ReadmeLens offers to take over `.md` files. You can also do it
+any time from **File ▸ Open Markdown Files with ReadmeLens…**, or from Finder's
+Get Info panel.
+
+macOS only assigns defaults to *installed* apps, so move ReadmeLens to
+`/Applications` first. If you set it while running from a build folder it will
+work, but the association points at a path that disappears when that folder is
+cleaned — the app says so rather than letting you find out later.
+
+Only Markdown types are claimed. `.txt` is deliberately left alone.
+
 ### Build from source
 
 Requires **Xcode 15+** and **macOS 14+**.

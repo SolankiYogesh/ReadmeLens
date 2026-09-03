@@ -96,6 +96,15 @@ name, field and value rather than being ignored.
 panel's **PDF ▸ Save as PDF** is how you get a PDF. The print system does the writing, so this app still never needs
 permission to write anything.
 
+## Opening Markdown files
+
+ReadmeLens offers to become your default Markdown viewer on first launch, and
+**File ▸ Open Markdown Files with ReadmeLens…** does it any time. Only `.md` and
+`.markdown` are claimed — plain `.txt` is left alone.
+
+macOS only assigns defaults to installed apps, so keep ReadmeLens in your
+Applications folder.
+
 ## Formatting
 
 Text can be **bold**, *italic*, ***both at once***, ~~struck through~~, or
