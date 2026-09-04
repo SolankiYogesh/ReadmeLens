@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://solankiyogesh.github.io/ReadmeLens/sitemap.xml
+Sitemap: https://readmelens.github.io/sitemap.xml

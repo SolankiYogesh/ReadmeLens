@@ -16,6 +16,10 @@ No browser, no dev server, no Electron. Native Swift, a few megabytes, instant.
 [![Swift](https://img.shields.io/badge/Swift-5.9%2B-fa7343)](https://swift.org)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
+**[readmelens.github.io](https://readmelens.github.io/)** &nbsp;·&nbsp;
+[Download](https://github.com/SolankiYogesh/ReadmeLens/releases/latest) &nbsp;·&nbsp;
+[FAQ](https://readmelens.github.io/#frequently-asked-questions)
+
 <img src="docs/screenshot-github-dark.png" width="880" alt="ReadmeLens rendering a document in the GitHub Dark theme">
 
 </div>
