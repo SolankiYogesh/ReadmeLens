@@ -171,3 +171,53 @@ extension EnvironmentValues {
         set { self[BlockIDKey.self] = newValue }
     }
 }
+
+// MARK: - Highlight snapshot
+
+/// The highlight state every run of text needs, as a value.
+///
+/// Text views must not observe `SearchModel` directly: there is one of them per
+/// paragraph, list item and table cell, so subscribing them all would mean any
+/// publish on the model rebuilds the entire document. This snapshot is
+/// `Equatable` and empty while the find bar is closed, so in the common case it
+/// never changes and never invalidates anything.
+struct SearchHighlight: Equatable {
+    var ranges: [Int: [Range<Int>]] = [:]
+    var current: SearchMatch?
+
+    static let inactive = SearchHighlight()
+
+    var isEmpty: Bool { ranges.isEmpty }
+
+    func ranges(for blockID: Int?) -> [Range<Int>] {
+        guard let blockID else { return [] }
+        return ranges[blockID] ?? []
+    }
+
+    /// The range being stepped to, if it falls in this block.
+    func currentRange(for blockID: Int?) -> Range<Int>? {
+        guard let blockID, let current, current.blockID == blockID else { return nil }
+        return current.range
+    }
+}
+
+extension SearchModel {
+    /// Snapshot for the environment. Empty unless the find bar is open with
+    /// hits, which keeps the value stable — and the document static — the rest
+    /// of the time.
+    var highlight: SearchHighlight {
+        guard isActive, !highlights.isEmpty else { return .inactive }
+        return SearchHighlight(ranges: highlights, current: currentMatch)
+    }
+}
+
+private struct SearchHighlightKey: EnvironmentKey {
+    static let defaultValue = SearchHighlight.inactive
+}
+
+extension EnvironmentValues {
+    var searchHighlight: SearchHighlight {
+        get { self[SearchHighlightKey.self] }
+        set { self[SearchHighlightKey.self] = newValue }
+    }
+}

@@ -20,6 +20,8 @@ struct ContentView: View {
                 documentPane
             }
         }
+        .environment(\.linkResolver, document.linkResolver)
+        .environment(\.searchHighlight, search.highlight)
         .navigationTitle(document.title)
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
@@ -267,6 +269,8 @@ struct DocumentScrollView: View {
     @EnvironmentObject private var defaultApp: DefaultAppCoordinator
     @Environment(\.theme) private var theme
     @Environment(\.typography) private var typography
+    // Written, never observed — see ViewportModel.
+    @Environment(\.viewport) private var viewport
 
     private static let space = "document"
 
@@ -289,6 +293,7 @@ struct DocumentScrollView: View {
                             )
                     }
                 }
+                .textSelection(.enabled)
                 .padding(.horizontal, 32)
                 .padding(.vertical, 28)
                 .frame(maxWidth: typography.contentMaxWidth, alignment: .leading)
@@ -304,8 +309,8 @@ struct DocumentScrollView: View {
                     .filter { $0.value >= -40 }
                     .min { $0.value < $1.value }?
                     .key
-                if top != document.topVisibleBlockID {
-                    document.topVisibleBlockID = top
+                if top != viewport.topVisibleBlockID {
+                    viewport.topVisibleBlockID = top
                 }
             }
             .onChange(of: search.pendingScroll) { _, target in
@@ -325,7 +330,7 @@ struct DocumentScrollView: View {
             .onChange(of: document.reloadToken) { _, _ in
                 // The list has just been rebuilt; let it lay out before
                 // scrolling, or the target may not exist yet.
-                guard let target = document.topVisibleBlockID else { return }
+                guard let target = viewport.topVisibleBlockID else { return }
                 Task { @MainActor in
                     await Task.yield()
                     proxy.scrollTo(target, anchor: .top)

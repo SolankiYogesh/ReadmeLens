@@ -27,7 +27,7 @@ struct HTMLInlineRun: View {
     @Environment(\.typography) private var typography
 
     @Environment(\.openURL) private var openURL
-    @EnvironmentObject private var document: DocumentModel
+    @Environment(\.linkResolver) private var links
 
     private enum Item: Identifiable {
         case word(Int, AttributedString)
@@ -79,7 +79,6 @@ struct HTMLInlineRun: View {
             Text(attributed(line))
                 .lineSpacing(5)
                 .multilineTextAlignment(textAlignment)
-                .textSelection(.enabled)
                 .frame(maxWidth: .infinity, alignment: frameAlignment)
         }
     }
@@ -87,7 +86,7 @@ struct HTMLInlineRun: View {
     @ViewBuilder
     private func imageView(source: String, alt: String, width: CGFloat?, link: String?) -> some View {
         let image = DocumentImage(source: source, alt: alt, declaredWidth: width)
-        if let link, let url = document.resolveLinkURL(link) {
+        if let link, let url = links.resolveLinkURL(link) {
             Button { openURL(url) } label: { image }
                 .buttonStyle(.plain)
                 .help(link)
@@ -133,7 +132,7 @@ struct HTMLInlineRun: View {
         if style.strike { piece.strikethroughStyle = .single }
         if style.underline { piece.underlineStyle = .single }
         if style.baselineOffset != 0 { piece.baselineOffset = style.baselineOffset }
-        if let link = style.link, let url = document.resolveLinkURL(link) {
+        if let link = style.link, let url = links.resolveLinkURL(link) {
             piece.link = url
         }
         return piece

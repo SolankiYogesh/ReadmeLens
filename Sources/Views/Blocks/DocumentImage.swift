@@ -34,7 +34,7 @@ struct DocumentImage: View {
     /// don't overflow the reading column.
     private static let naturalCap: CGFloat = 900
 
-    @EnvironmentObject private var document: DocumentModel
+    @Environment(\.linkResolver) private var links
     @Environment(\.theme) private var theme
     @Environment(\.typography) private var typography
     @Environment(\.isPrinting) private var isPrinting
@@ -42,7 +42,7 @@ struct DocumentImage: View {
     @State private var image: NSImage?
     @State private var failed = false
 
-    private var url: URL? { document.resolveImageURL(source) }
+    private var url: URL? { links.resolveImageURL(source) }
 
     var body: some View {
         // A render pass runs no async work, so printing uses whatever is

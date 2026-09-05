@@ -63,12 +63,22 @@ struct MarkdownTableView: View {
         }
     }
 
+    /// Widest a single column may get before its text starts wrapping.
+    ///
+    /// The horizontal ScrollView proposes unbounded width, so without a cap a
+    /// cell holding a paragraph lays out as one very long line — which makes
+    /// the table both unreadable and expensive, since Grid measures every cell
+    /// to negotiate column widths. Capping is what GitHub does too.
+    private var maxCellWidth: CGFloat { typography.body * 26 }
+
     private func cell(_ inline: InlineText, column: Int, isHeader: Bool) -> some View {
         StyledText(
             inline: inline,
             size: typography.body * 0.95,
             weight: isHeader ? .semibold : .regular
         )
+        .frame(maxWidth: maxCellWidth, alignment: alignment(column))
+        .fixedSize(horizontal: false, vertical: true)
         .padding(.horizontal, 13)
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: alignment(column))

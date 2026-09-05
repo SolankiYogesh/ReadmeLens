@@ -9,6 +9,7 @@ struct ReadmeLensApp: App {
     @StateObject private var search = SearchModel()
     @StateObject private var settings = AppSettings()
     @StateObject private var defaultApp = DefaultAppCoordinator()
+    @StateObject private var viewport = ViewportModel()
 
     var body: some Scene {
         // A single Window, not a WindowGroup. A group creates one window per
@@ -22,6 +23,10 @@ struct ReadmeLensApp: App {
                 .environmentObject(search)
                 .environmentObject(settings)
                 .environmentObject(defaultApp)
+                .environmentObject(viewport)
+                // Same object, reachable both ways: readers observe it, the
+                // scrolling document writes it without subscribing.
+                .environment(\.viewport, viewport)
                 .environment(\.theme, themeStore.current)
                 .environment(\.typography, settings.typography)
                 .frame(minWidth: 640, minHeight: 480)

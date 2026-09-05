@@ -29,8 +29,6 @@ final class DocumentModel: ObservableObject {
     @Published private(set) var didJustReload = false
 
     /// Topmost block currently on screen. Drives outline highlighting and
-    /// restoring the reading position after a reload.
-    @Published var topVisibleBlockID: String?
 
     /// Headings of the open document, recomputed whenever it is parsed.
     @Published private(set) var outline: [OutlineEntry] = []
@@ -79,9 +77,9 @@ final class DocumentModel: ObservableObject {
     /// The heading the reader is currently under — the last one at or above the
     /// topmost visible block, so the outline tracks position rather than only
     /// highlighting exact heading hits.
-    var activeOutlineID: String? {
+    func activeOutlineID(topVisibleBlockID top: String?) -> String? {
         guard !outline.isEmpty else { return nil }
-        guard let top = topVisibleBlockID,
+        guard let top,
               let index = blocks.firstIndex(where: { $0.scrollID == top })
         else { return outline.first?.id }
 
@@ -330,68 +328,33 @@ final class DocumentModel: ObservableObject {
 
     /// Internal scheme used to carry in-document anchors through SwiftUI's
     /// link handling, which only accepts a `URL`.
-    static let anchorScheme = "readmelens-anchor"
+    static var anchorScheme: String { LinkResolver.anchorScheme }
 
     static let markdownExtensions: Set<String> = [
         "md", "markdown", "mdown", "mkd", "mdtext", "text", "txt",
     ]
 
+    /// Value handed to the view tree so text views can resolve links without
+    /// subscribing to this object. See `LinkResolver`.
+    var linkResolver: LinkResolver { LinkResolver(baseDirectory: baseDirectory) }
+
     func resolveImageURL(_ source: String) -> URL? {
-        resolveResource(source)
+        linkResolver.resolveImageURL(source)
     }
 
     /// Turns a link destination into something clickable. Anchors become a
     /// private scheme the view intercepts; relative paths become file URLs.
     func resolveLinkURL(_ destination: String) -> URL? {
-        let trimmed = destination.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-
-        if trimmed.hasPrefix("#") {
-            let slug = String(trimmed.dropFirst())
-            guard !slug.isEmpty,
-                  let escaped = slug.addingPercentEncoding(withAllowedCharacters: .alphanumerics)
-            else { return nil }
-            return URL(string: "\(Self.anchorScheme)://\(escaped)")
-        }
-
-        if let url = URL(string: trimmed), let scheme = url.scheme?.lowercased() {
-            switch scheme {
-            case "http", "https", "mailto", "file": return url
-            default: return nil          // javascript:, data:, …
-            }
-        }
-        return resolveResource(trimmed)
+        linkResolver.resolveLinkURL(destination)
     }
 
-    /// Resolves a relative path against the document folder, refusing anything
-    /// that would escape it.
     private func resolveResource(_ source: String) -> URL? {
-        let trimmed = source.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-
-        if let url = URL(string: trimmed), let scheme = url.scheme?.lowercased() {
-            if scheme == "http" || scheme == "https" || scheme == "file" { return url }
-            return nil
-        }
-        guard let baseDirectory else { return nil }
-
-        // Strip any fragment before touching the filesystem.
-        var path = trimmed
-        if let hash = path.firstIndex(of: "#") { path = String(path[path.startIndex..<hash]) }
-        guard !path.isEmpty else { return nil }
-        let decoded = path.removingPercentEncoding ?? path
-
-        let candidate = URL(fileURLWithPath: decoded, relativeTo: baseDirectory).standardizedFileURL
-        let root = baseDirectory.standardizedFileURL.path
-        guard candidate.path == root || candidate.path.hasPrefix(root + "/") else { return nil }
-        return candidate
+        linkResolver.resolveResource(source)
     }
 
     /// Fragment on a relative link, e.g. `docs/api.md#usage`.
     func anchorFragment(of destination: String) -> String? {
-        guard let hash = destination.firstIndex(of: "#") else { return nil }
-        let slug = String(destination[destination.index(after: hash)...])
-        return slug.isEmpty ? nil : slug
+        linkResolver.anchorFragment(of: destination)
     }
 
     // MARK: - Local reference detection

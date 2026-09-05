@@ -74,6 +74,9 @@ enum DocumentPrinter {
             .environment(\.isPrinting, true)
             .environmentObject(document)
             .environmentObject(search)
+            // Block views read these as values, not from the models.
+            .environment(\.linkResolver, document.linkResolver)
+            .environment(\.searchHighlight, search.highlight)
             .frame(width: contentWidth)
 
         let renderer = ImageRenderer(content: root)

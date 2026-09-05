@@ -11,7 +11,7 @@ struct CodeBlockView: View {
     @Environment(\.theme) private var theme
     @Environment(\.typography) private var typography
 
-    @EnvironmentObject private var search: SearchModel
+    @Environment(\.searchHighlight) private var searchHighlight
     @Environment(\.searchBlockID) private var blockID
     @Environment(\.isPrinting) private var isPrinting
     @State private var runs: [SyntaxRun]?
@@ -43,7 +43,6 @@ struct CodeBlockView: View {
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     Text(attributed)
-                        .textSelection(.enabled)
                         .lineSpacing(3)
                         .padding(14)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -107,15 +106,11 @@ struct CodeBlockView: View {
     }
 
     private var highlightRanges: [Range<Int>] {
-        guard search.isActive, let blockID else { return [] }
-        return search.highlightRanges(for: blockID)
+        searchHighlight.ranges(for: blockID)
     }
 
     private var currentRange: Range<Int>? {
-        guard let blockID, let match = search.currentMatch,
-              match.blockID == blockID
-        else { return nil }
-        return match.range
+        searchHighlight.currentRange(for: blockID)
     }
 
     private func highlight() async {

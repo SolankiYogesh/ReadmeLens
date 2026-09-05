@@ -34,6 +34,8 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
             rootView: QuickLookPreview(theme: theme)
                 .environmentObject(document)
                 .environmentObject(search)
+                .environment(\.linkResolver, document.linkResolver)
+                .environment(\.searchHighlight, search.highlight)
         )
         host.translatesAutoresizingMaskIntoConstraints = false
 
@@ -71,6 +73,7 @@ struct QuickLookPreview: View {
                     BlockView(block: block)
                 }
             }
+            .textSelection(.enabled)
             .padding(.horizontal, 28)
             .padding(.vertical, 24)
             .frame(maxWidth: typography.contentMaxWidth, alignment: .leading)

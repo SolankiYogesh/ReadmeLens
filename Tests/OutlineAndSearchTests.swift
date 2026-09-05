@@ -215,3 +215,53 @@ final class HighlightSplitterTests: XCTestCase {
         }
     }
 }
+
+/// The outline's active-section logic, which now takes the scroll cursor as a
+/// parameter instead of reading it off `DocumentModel` — the cursor moved to
+/// `ViewportModel` so that scrolling cannot invalidate the document body.
+@MainActor
+final class ActiveOutlineTests: XCTestCase {
+
+    private func model(_ source: String) -> DocumentModel {
+        let document = DocumentModel()
+        document.render(source)
+        return document
+    }
+
+    func testCursorOnAHeadingSelectsThatHeading() {
+        let document = model("# One\n\ntext\n\n## Two\n\nmore")
+        let two = document.blocks.first { block in
+            if case let .heading(_, text, _) = block.kind { return text.plain == "Two" }
+            return false
+        }
+        let id = try? XCTUnwrap(two?.scrollID)
+        XCTAssertEqual(document.activeOutlineID(topVisibleBlockID: id), id)
+    }
+
+    /// The point of the backward scan: sitting on a paragraph should highlight
+    /// the heading it lives under, not the previous section.
+    func testCursorOnABodyBlockSelectsTheHeadingAbove() throws {
+        let document = model("# One\n\ntext\n\n## Two\n\nmore body")
+        let blocks = document.blocks
+        let paragraph = try XCTUnwrap(blocks.last)
+        let twoID = try XCTUnwrap(blocks.first { block in
+            if case let .heading(_, text, _) = block.kind { return text.plain == "Two" }
+            return false
+        }?.scrollID)
+
+        XCTAssertEqual(document.activeOutlineID(topVisibleBlockID: paragraph.scrollID), twoID)
+    }
+
+    func testNoCursorFallsBackToTheFirstHeading() {
+        let document = model("# One\n\ntext\n\n## Two")
+        XCTAssertEqual(
+            document.activeOutlineID(topVisibleBlockID: nil),
+            document.outline.first?.id
+        )
+    }
+
+    func testDocumentWithoutHeadingsHasNoActiveEntry() {
+        let document = model("just a paragraph")
+        XCTAssertNil(document.activeOutlineID(topVisibleBlockID: nil))
+    }
+}

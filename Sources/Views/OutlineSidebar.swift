@@ -3,11 +3,15 @@ import SwiftUI
 /// Table of contents for the open document.
 struct OutlineSidebar: View {
     @EnvironmentObject private var document: DocumentModel
+    // The one view that should rebuild as the reader scrolls.
+    @EnvironmentObject private var viewport: ViewportModel
     @Environment(\.theme) private var theme
     @Environment(\.typography) private var typography
 
     private var depths: [String: Int] { document.outline.indentationDepths }
-    private var activeID: String? { document.activeOutlineID }
+    private var activeID: String? {
+        document.activeOutlineID(topVisibleBlockID: viewport.topVisibleBlockID)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
