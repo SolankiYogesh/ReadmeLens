@@ -42,9 +42,7 @@ struct BlockView: View {
             CodeBlockView(language: language, source: source)
 
         case let .mermaid(source):
-            // Rendered as source until the diagram engine lands; showing the
-            // definition beats showing nothing.
-            CodeBlockView(language: "mermaid", source: source)
+            MermaidView(source: source)
 
         case let .quote(blocks, depth):
             QuoteView(blocks: blocks, depth: depth)
