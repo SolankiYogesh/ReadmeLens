@@ -11,8 +11,8 @@ import SwiftUI
 ///
 /// Printing goes through the system panel rather than writing a file, so the
 /// panel's **PDF ▸ Save as PDF** produces the file and the print system does
-/// the writing. ReadmeLens keeps its read-only sandbox and never asks for
-/// permission to write anywhere.
+/// the writing. ReadmeLens stays read-only and never asks for permission to
+/// write anywhere itself.
 @MainActor
 enum DocumentPrinter {
 

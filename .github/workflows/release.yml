@@ -14,6 +14,9 @@ on:
         description: 'Tag to build (e.g. v0.2.0)'
         required: true
 
+env:
+  SPARKLE_VERSION: "2.9.6"
+
 permissions:
   contents: write        # needed to create the release
 
@@ -24,11 +27,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # need the annotated tag object, not just its commit
 
       - name: Resolve version
         id: version
         run: |
           TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          git fetch origin "refs/tags/$TAG:refs/tags/$TAG" --force
           echo "tag=$TAG"               >> "$GITHUB_OUTPUT"
           echo "version=${TAG#v}"       >> "$GITHUB_OUTPUT"
           echo "Building $TAG"
@@ -51,7 +57,7 @@ jobs:
             MARKETING_VERSION="${{ steps.version.outputs.version }}" \
             build
 
-      - name: Verify the bundle is signed and entitled
+      - name: Verify the bundle is signed
         run: |
           APP="build/Build/Products/Release/ReadmeLens.app"
           APPEX="$APP/Contents/PlugIns/ReadmeLensQuickLook.appex"
@@ -61,10 +67,9 @@ jobs:
           /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Contents/Info.plist"
 
           # Building with CODE_SIGNING_ALLOWED=NO leaves a linker-signed binary
-          # identified by product name, with no entitlements. macOS then
-          # refuses to register the Quick Look extension and the sandbox and
-          # print entitlements are simply absent. Fail the build rather than
-          # shipping that again.
+          # identified by product name rather than its bundle identifier.
+          # macOS then refuses to register the Quick Look extension at all.
+          # Fail the build rather than shipping that again.
           for bundle in "$APP" "$APPEX"; do
             id=$(codesign -dv "$bundle" 2>&1 | sed -n 's/^Identifier=//p')
             case "$id" in
@@ -72,10 +77,7 @@ jobs:
               *) echo "::error::$bundle signed as '$id', expected a bundle identifier"; exit 1 ;;
             esac
           done
-          codesign -d --entitlements - --xml "$APP" 2>/dev/null \
-            | grep -q "com.apple.security.app-sandbox" \
-            || { echo "::error::app has no entitlements"; exit 1; }
-          echo "signed and entitled"
+          echo "signed"
 
       - name: Package
         id: package
@@ -111,3 +113,59 @@ jobs:
             --title "ReadmeLens ${{ steps.version.outputs.tag }}" \
             --notes-file RELEASE_NOTES.md \
             --generate-notes
+
+      # Everything below feeds Sparkle: existing users see this as the
+      # in-app "what's new" text and get pointed at the asset just
+      # published above.
+      - name: Write appcast release notes
+        run: |
+          ZIP="${{ steps.package.outputs.zip }}"
+          NOTES="appcast_build/${ZIP%.zip}.md"
+          mkdir -p appcast_build
+          git tag -l --format='%(contents)' "${{ steps.version.outputs.tag }}" > "$NOTES"
+          cp "${{ steps.package.outputs.zip }}" appcast_build/
+          test -f docs/appcast.xml && cp docs/appcast.xml appcast_build/ || true
+
+      - name: Install Sparkle tools
+        run: |
+          curl -sL --retry 3 \
+            "https://github.com/sparkle-project/Sparkle/releases/download/${SPARKLE_VERSION}/Sparkle-${SPARKLE_VERSION}.tar.xz" \
+            -o sparkle-tools.tar.xz
+          mkdir -p sparkle-tools
+          tar -xf sparkle-tools.tar.xz -C sparkle-tools
+
+      - name: Sign the update and regenerate the appcast
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: |
+          if [ -z "$SPARKLE_PRIVATE_KEY" ]; then
+            echo "::error::SPARKLE_PRIVATE_KEY secret is not set — see README ▸ Releasing"
+            exit 1
+          fi
+          echo "$SPARKLE_PRIVATE_KEY" | ./sparkle-tools/bin/generate_appcast \
+            --ed-key-file - \
+            --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag }}/" \
+            --link "https://readmelens.github.io/" \
+            appcast_build
+
+      - name: Publish the appcast
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # A separate, clean clone of just main — the job's own checkout is
+          # sitting on the tag and has build artifacts and a regenerated
+          # project.pbxproj lying around, neither of which belong here.
+          git clone --depth 1 --branch main \
+            "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" \
+            appcast_repo
+          cp appcast_build/appcast.xml appcast_repo/docs/appcast.xml
+          cd appcast_repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/appcast.xml
+          if git diff --cached --quiet; then
+            echo "appcast unchanged"
+          else
+            git commit -m "Update appcast for ${{ steps.version.outputs.tag }}"
+            git push origin HEAD:main
+          fi

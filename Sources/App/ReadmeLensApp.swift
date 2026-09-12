@@ -1,3 +1,4 @@
+import Sparkle
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -10,6 +11,12 @@ struct ReadmeLensApp: App {
     @StateObject private var settings = AppSettings()
     @StateObject private var defaultApp = DefaultAppCoordinator()
     @StateObject private var viewport = ViewportModel()
+
+    /// Starts immediately so a background check can run before the user ever
+    /// opens the app menu, per `SUScheduledCheckInterval` in Info.plist.
+    private let updaterController = SPUStandardUpdaterController(
+        startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil
+    )
 
     var body: some Scene {
         // A single Window, not a WindowGroup. A group creates one window per
@@ -40,6 +47,9 @@ struct ReadmeLensApp: App {
         }
         .windowToolbarStyle(.unified)
         .commands {
+            CommandGroup(after: .appInfo) {
+                CheckForUpdatesView(updater: updaterController.updater)
+            }
             CommandGroup(after: .sidebar) {
                 Button("Zoom In") { settings.zoomIn() }
                     .keyboardShortcut("+", modifiers: .command)
@@ -108,7 +118,7 @@ struct ReadmeLensApp: App {
         }
 
         Settings {
-            SettingsView()
+            SettingsView(updater: updaterController.updater)
                 .environmentObject(themeStore)
                 .environmentObject(settings)
                 .environmentObject(defaultApp)

@@ -17,6 +17,14 @@
   <key>NSSupportsAutomaticTermination</key>     <true/>
   <key>NSSupportsSuddenTermination</key>        <true/>
 
+  <!-- Sparkle: where to look for updates, and the EdDSA key that must sign
+       them. The matching private key lives only in the release workflow's
+       SPARKLE_PRIVATE_KEY secret — see .github/workflows/release.yml. -->
+  <key>SUFeedURL</key>                          <string>https://readmelens.github.io/appcast.xml</string>
+  <key>SUPublicEDKey</key>                      <string>S4b8pfqtSXfUx3XF0ikAkRdyMhBd8X7DXW3uUpruRzE=</string>
+  <key>SUEnableJavaScript</key>                 <false/>
+  <key>SUScheduledCheckInterval</key>           <integer>86400</integer>
+
   <key>CFBundleDocumentTypes</key>
   <array>
     <dict>

@@ -7,12 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		013E1A824A3D406A09E878B9 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = E64B5B0AF0C8C3669352B2F3 /* Sparkle */; };
 		026812182E535B80325DD619 /* HTMLNodesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08E2DE2AD6A60B2ADDF9A1D /* HTMLNodesView.swift */; };
 		02EEAE22F089018B5D799C09 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 272F12ADEC84882D136F3F89 /* AppDelegate.swift */; };
 		03B3980D87AB62AEDFA8CCAC /* Welcome.md in Resources */ = {isa = PBXBuildFile; fileRef = 710730D0833F7BE1B4AC8E15 /* Welcome.md */; };
-		362253C319B74103BEECD555 /* Mermaid in Resources */ = {isa = PBXBuildFile; fileRef = 0D93C980FBB14549815ABCD6 /* Mermaid */; };
 		0720D9CC9E1DDD8344503B0E /* CodeBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5CD739050A07BA13ECEF79 /* CodeBlockView.swift */; };
-		58139C71022947EBB62A12A0 /* MermaidView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6F3A8ACB0A14FB9A70E9C41 /* MermaidView.swift */; };
 		08784E6179831696BABF401D /* RenderBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C84C34635C525C5CA9011962 /* RenderBlock.swift */; };
 		0A78065229C6A473AEE96465 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = D79369082BDA9E8F3BAC17BA /* Typography.swift */; };
 		0CD90092797A8FD04895C35A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA92C56E5FEA190EEB211519 /* SettingsView.swift */; };
@@ -25,7 +24,6 @@
 		20B3D0CA9A1B4DEE5864EBF8 /* ViewportModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA515C0EACFE10A2B7A138C /* ViewportModel.swift */; };
 		231DC0EA113906C8D98BBADD /* HTMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F07D250039DB2734A8B138 /* HTMLParser.swift */; };
 		2374D37B4441D6A54F40E857 /* CodeBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5CD739050A07BA13ECEF79 /* CodeBlockView.swift */; };
-		24AA6D7E4EF44EB2847E8588 /* MermaidView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6F3A8ACB0A14FB9A70E9C41 /* MermaidView.swift */; };
 		252241B3B3E651479E7430FD /* DefaultAppBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426CCD3AEC703E933E581DC4 /* DefaultAppBanner.swift */; };
 		261F7796E474C12CFBE6D94E /* Outline.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE57AD10235982F9913AEF61 /* Outline.swift */; };
 		27E827C618FB3EBF93EB7F32 /* HighlightSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1AA870915B2D09D408042A0 /* HighlightSplitter.swift */; };
@@ -42,6 +40,7 @@
 		4A45EC23E2F832BA12A448F6 /* HTMLNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A71131794E5C8D6308F3EB /* HTMLNode.swift */; };
 		4B16ACBED188B3BFFA441C71 /* DefaultAppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8396B417ED8EE9D4C067F0B9 /* DefaultAppCoordinator.swift */; };
 		4E0E6BDBEFBA8374B9F689AD /* DocumentPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20E3CCB9DABE8A64DE38911 /* DocumentPrinter.swift */; };
+		5240467C36CD1D519B735D05 /* MermaidView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5BE1E7BF0D83503C39E35F1 /* MermaidView.swift */; };
 		527244276AD46935D85196AA /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFB18548061A559F5AA0367A /* AppSettings.swift */; };
 		55B5324188ECB56506F07E7F /* FileWatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E02FE627EDBD3FE6F6D7F4EA /* FileWatcherTests.swift */; };
 		564162A5D6C004A8CF2B781C /* OutlineAndSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B293CB144DA7EFA878596450 /* OutlineAndSearchTests.swift */; };
@@ -54,6 +53,7 @@
 		68DF1F6E2CACFC0B1CA4C953 /* HTMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F07D250039DB2734A8B138 /* HTMLParser.swift */; };
 		6C080D43C8FC01AAA7631170 /* HTMLParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5C4E0A52086E5F3217FC88 /* HTMLParserTests.swift */; };
 		6E72A94D95406D0478F5FCBF /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86644D315C3640380D70D737 /* SearchBar.swift */; };
+		6F9B8CC44C071017BDDB0A01 /* CheckForUpdatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4E5B8701640B24E065D1A /* CheckForUpdatesView.swift */; };
 		707F10C8498FFD4AEA62B9C4 /* InlineFlattener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A390528BCAB052347C3E767 /* InlineFlattener.swift */; };
 		76DE860864412EF6666BB2C1 /* MarkdownTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC66BD8DA7A8AFF42D5F4384 /* MarkdownTableView.swift */; };
 		79C7B2BB3CE0514D536EB05E /* LanguageGrammar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0521C09D905085B18135CBC /* LanguageGrammar.swift */; };
@@ -65,10 +65,13 @@
 		865575C628CFB4364B7C7AD3 /* ReadmeLensApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 935E18BE23449FE2B7667A17 /* ReadmeLensApp.swift */; };
 		88B7098DBD5DC44912008B73 /* CustomThemeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F2EDDBAEEB7517F913CB22 /* CustomThemeStore.swift */; };
 		8E97755B398338D446FC4120 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DAD611EDABF5EE906C9DA99D /* Assets.xcassets */; };
+		925E028CE83196975A541CFD /* MermaidHTMLBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DA2FB6528B8E394F7A4FC97 /* MermaidHTMLBuilderTests.swift */; };
 		9413240A7C70ECCED2A3CEE6 /* HTMLNodesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08E2DE2AD6A60B2ADDF9A1D /* HTMLNodesView.swift */; };
 		94C162963A8D4715611FAF6C /* ViewportModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA515C0EACFE10A2B7A138C /* ViewportModel.swift */; };
 		956892F0D7EC7C739F829317 /* HighlightSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1AA870915B2D09D408042A0 /* HighlightSplitter.swift */; };
 		977490F83C486A70E2EF27EB /* DocumentImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91F73CE5C3D1AC1D1CF290E6 /* DocumentImage.swift */; };
+		9B2B4C7C377A95FC27AD1001 /* CheckForUpdatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4E5B8701640B24E065D1A /* CheckForUpdatesView.swift */; };
+		9D94E281C4D038100D9156A8 /* mermaid.min.js in Resources */ = {isa = PBXBuildFile; fileRef = A07AF7FF7B1F96D382765CD2 /* mermaid.min.js */; };
 		A0C03E011B89B5A09E11C7E3 /* DocumentImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91F73CE5C3D1AC1D1CF290E6 /* DocumentImage.swift */; };
 		A228D5D80F795B8428922323 /* DefaultAppBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426CCD3AEC703E933E581DC4 /* DefaultAppBanner.swift */; };
 		A4495B9E157A59C574F4840E /* ThemeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB92B3C48041572F10129D0 /* ThemeStore.swift */; };
@@ -81,7 +84,6 @@
 		B2EDA768F9E781D495352CDD /* HTMLInlineRun.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA1F72163E6BF04AC25C6476 /* HTMLInlineRun.swift */; };
 		B8DEA90491C5EA7BA7EF055F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905CC632DC6C8BE56B18FE1C /* ContentView.swift */; };
 		BCEE4CA55D1A7C82C8622864 /* ThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2602A4E4552968859CDA54B /* ThemeTests.swift */; };
-		DCC1E080C10E484C99A06840 /* MermaidHTMLBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BED658839D4E93851697D3 /* MermaidHTMLBuilderTests.swift */; };
 		BFB60ADF964CFE5A76E78ED1 /* StyledText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E98A6295B231E05C5E160F /* StyledText.swift */; };
 		C0680621D400E7C987607804 /* DocumentPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20E3CCB9DABE8A64DE38911 /* DocumentPrinter.swift */; };
 		C0B00A1EBEC1264437B4AAAD /* LinkResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A7C4FB046E8433B0DA95C0C /* LinkResolver.swift */; };
@@ -96,6 +98,7 @@
 		D77B26DF50C975C86EE35538 /* Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 689967CA8C6A41D69EAC1BB8 /* Markdown */; };
 		D7903A3D7EBACB1F90EE595B /* HTMLIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43A7E2538BEBCFDFADB3851 /* HTMLIntegrationTests.swift */; };
 		D8A466A9E84285D7F2FF7659 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05AB63C2D4F75441DF4A423 /* SearchModel.swift */; };
+		DA8EA6FECB302E899214048B /* MermaidView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5BE1E7BF0D83503C39E35F1 /* MermaidView.swift */; };
 		DE76FDC935CC7EE53DEB105D /* BuiltinThemes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2323B7C4F76AC05FBF874635 /* BuiltinThemes.swift */; };
 		DEF56EDDA0BA39293E92239B /* FileWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 264BFD166449A5A529A853A7 /* FileWatcher.swift */; };
 		E3744607BDE44B9F2B9743D2 /* SearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C05AB63C2D4F75441DF4A423 /* SearchModel.swift */; };
@@ -144,6 +147,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0DA2FB6528B8E394F7A4FC97 /* MermaidHTMLBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidHTMLBuilderTests.swift; sourceTree = "<group>"; };
 		10672609D88CF0FA95FDB640 /* FolderAccessStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderAccessStore.swift; sourceTree = "<group>"; };
 		18EF9EBC424858374A46CDE1 /* DocumentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentModel.swift; sourceTree = "<group>"; };
 		1DC04A8309602D0E5A6E2E36 /* ThemeFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeFile.swift; sourceTree = "<group>"; };
@@ -175,8 +179,9 @@
 		91F73CE5C3D1AC1D1CF290E6 /* DocumentImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentImage.swift; sourceTree = "<group>"; };
 		935E18BE23449FE2B7667A17 /* ReadmeLensApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadmeLensApp.swift; sourceTree = "<group>"; };
 		9E5CD739050A07BA13ECEF79 /* CodeBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeBlockView.swift; sourceTree = "<group>"; };
-		D6F3A8ACB0A14FB9A70E9C41 /* MermaidView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidView.swift; sourceTree = "<group>"; };
 		9EBA1ACD234F8612651606AD /* BlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockView.swift; sourceTree = "<group>"; };
+		A07AF7FF7B1F96D382765CD2 /* mermaid.min.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = mermaid.min.js; sourceTree = "<group>"; };
+		A5BE1E7BF0D83503C39E35F1 /* MermaidView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidView.swift; sourceTree = "<group>"; };
 		A6B108BC038F7A9CCB295DD7 /* OutlineSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlineSidebar.swift; sourceTree = "<group>"; };
 		AFE23720B2152D78F35D3858 /* ThemeFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeFileTests.swift; sourceTree = "<group>"; };
 		B0521C09D905085B18135CBC /* LanguageGrammar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageGrammar.swift; sourceTree = "<group>"; };
@@ -192,16 +197,15 @@
 		CDB92B3C48041572F10129D0 /* ThemeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeStore.swift; sourceTree = "<group>"; };
 		D1AA870915B2D09D408042A0 /* HighlightSplitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightSplitter.swift; sourceTree = "<group>"; };
 		D2602A4E4552968859CDA54B /* ThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeTests.swift; sourceTree = "<group>"; };
-		94BED658839D4E93851697D3 /* MermaidHTMLBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidHTMLBuilderTests.swift; sourceTree = "<group>"; };
 		D2F07D250039DB2734A8B138 /* HTMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLParser.swift; sourceTree = "<group>"; };
 		D79369082BDA9E8F3BAC17BA /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
 		DAD611EDABF5EE906C9DA99D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		0D93C980FBB14549815ABCD6 /* Mermaid */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Mermaid; sourceTree = "<group>"; };
 		DC66BD8DA7A8AFF42D5F4384 /* MarkdownTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownTableView.swift; sourceTree = "<group>"; };
 		E02FE627EDBD3FE6F6D7F4EA /* FileWatcherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileWatcherTests.swift; sourceTree = "<group>"; };
 		ED5C4E0A52086E5F3217FC88 /* HTMLParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLParserTests.swift; sourceTree = "<group>"; };
 		F1833AF6D15F24862CC232A5 /* NavigationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationTests.swift; sourceTree = "<group>"; };
 		F2385B789D786D47CD2EBA0C /* BlockFlattener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockFlattener.swift; sourceTree = "<group>"; };
+		F7E4E5B8701640B24E065D1A /* CheckForUpdatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckForUpdatesView.swift; sourceTree = "<group>"; };
 		FB0990F4A6D4885F470B5816 /* InlineText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InlineText.swift; sourceTree = "<group>"; };
 		FE57AD10235982F9913AEF61 /* Outline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Outline.swift; sourceTree = "<group>"; };
 		FFB18548061A559F5AA0367A /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
@@ -221,6 +225,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7FC76926B7A706A16622214D /* Markdown in Frameworks */,
+				013E1A824A3D406A09E878B9 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,6 +247,7 @@
 				E02FE627EDBD3FE6F6D7F4EA /* FileWatcherTests.swift */,
 				B43A7E2538BEBCFDFADB3851 /* HTMLIntegrationTests.swift */,
 				ED5C4E0A52086E5F3217FC88 /* HTMLParserTests.swift */,
+				0DA2FB6528B8E394F7A4FC97 /* MermaidHTMLBuilderTests.swift */,
 				F1833AF6D15F24862CC232A5 /* NavigationTests.swift */,
 				B293CB144DA7EFA878596450 /* OutlineAndSearchTests.swift */,
 				35637A8A5455B850AFAD6646 /* ParserTests.swift */,
@@ -249,7 +255,6 @@
 				1E8436DBE8F09535F21BFFFE /* SyntaxHighlighterTests.swift */,
 				AFE23720B2152D78F35D3858 /* ThemeFileTests.swift */,
 				D2602A4E4552968859CDA54B /* ThemeTests.swift */,
-				94BED658839D4E93851697D3 /* MermaidHTMLBuilderTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -277,11 +282,11 @@
 			children = (
 				9EBA1ACD234F8612651606AD /* BlockView.swift */,
 				9E5CD739050A07BA13ECEF79 /* CodeBlockView.swift */,
-				D6F3A8ACB0A14FB9A70E9C41 /* MermaidView.swift */,
 				91F73CE5C3D1AC1D1CF290E6 /* DocumentImage.swift */,
 				CA1F72163E6BF04AC25C6476 /* HTMLInlineRun.swift */,
 				C08E2DE2AD6A60B2ADDF9A1D /* HTMLNodesView.swift */,
 				DC66BD8DA7A8AFF42D5F4384 /* MarkdownTableView.swift */,
+				A5BE1E7BF0D83503C39E35F1 /* MermaidView.swift */,
 			);
 			path = Blocks;
 			sourceTree = "<group>";
@@ -308,6 +313,7 @@
 			children = (
 				272F12ADEC84882D136F3F89 /* AppDelegate.swift */,
 				FFB18548061A559F5AA0367A /* AppSettings.swift */,
+				F7E4E5B8701640B24E065D1A /* CheckForUpdatesView.swift */,
 				8396B417ED8EE9D4C067F0B9 /* DefaultAppCoordinator.swift */,
 				18EF9EBC424858374A46CDE1 /* DocumentModel.swift */,
 				B20E3CCB9DABE8A64DE38911 /* DocumentPrinter.swift */,
@@ -333,8 +339,8 @@
 		8EB12652D4508388588397F4 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				E506FE7080F4C6C1092C8501 /* Mermaid */,
 				DAD611EDABF5EE906C9DA99D /* Assets.xcassets */,
-				0D93C980FBB14549815ABCD6 /* Mermaid */,
 				710730D0833F7BE1B4AC8E15 /* Welcome.md */,
 			);
 			path = Resources;
@@ -380,6 +386,14 @@
 				78CC108DF4C55E34FBC7674C /* Views */,
 			);
 			path = Sources;
+			sourceTree = "<group>";
+		};
+		E506FE7080F4C6C1092C8501 /* Mermaid */ = {
+			isa = PBXGroup;
+			children = (
+				A07AF7FF7B1F96D382765CD2 /* mermaid.min.js */,
+			);
+			path = Mermaid;
 			sourceTree = "<group>";
 		};
 		F1C07B3166BF526AADDD66AE /* Theme */ = {
@@ -453,6 +467,7 @@
 			name = ReadmeLens;
 			packageProductDependencies = (
 				3476431F263C63EF441CF804 /* Markdown */,
+				E64B5B0AF0C8C3669352B2F3 /* Sparkle */,
 			);
 			productName = ReadmeLens;
 			productReference = 6D460D7AEFCC6608A821FB57 /* ReadmeLens.app */;
@@ -509,6 +524,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				93FAFCF1C2D42EF5AFF79F7B /* XCRemoteSwiftPackageReference "swift-markdown" */,
+				2748112AF435AD97FBD78FBE /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FD90858CA505CC02B3224A9C /* Products */;
@@ -528,8 +544,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8E97755B398338D446FC4120 /* Assets.xcassets in Resources */,
-				362253C319B74103BEECD555 /* Mermaid in Resources */,
 				03B3980D87AB62AEDFA8CCAC /* Welcome.md in Resources */,
+				9D94E281C4D038100D9156A8 /* mermaid.min.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -545,8 +561,8 @@
 				E44C7A9103B281C230D22EBE /* BlockFlattener.swift in Sources */,
 				C7B91126D3A57EF72144B3F7 /* BlockView.swift in Sources */,
 				DE76FDC935CC7EE53DEB105D /* BuiltinThemes.swift in Sources */,
+				6F9B8CC44C071017BDDB0A01 /* CheckForUpdatesView.swift in Sources */,
 				2374D37B4441D6A54F40E857 /* CodeBlockView.swift in Sources */,
-				24AA6D7E4EF44EB2847E8588 /* MermaidView.swift in Sources */,
 				B8DEA90491C5EA7BA7EF055F /* ContentView.swift in Sources */,
 				A9F89893EBEE10A824E18D8F /* CustomThemeStore.swift in Sources */,
 				252241B3B3E651479E7430FD /* DefaultAppBanner.swift in Sources */,
@@ -567,6 +583,7 @@
 				6312B82B2136EDA6291C1CD0 /* LanguageGrammar.swift in Sources */,
 				CE0AC4F11CBC7AC8AD86E54A /* LinkResolver.swift in Sources */,
 				EA208DB067402908918910C0 /* MarkdownTableView.swift in Sources */,
+				5240467C36CD1D519B735D05 /* MermaidView.swift in Sources */,
 				CF9AB58A290563FB970B7189 /* Outline.swift in Sources */,
 				CBF5F122793312ADAB63FA6C /* OutlineSidebar.swift in Sources */,
 				865575C628CFB4364B7C7AD3 /* ReadmeLensApp.swift in Sources */,
@@ -593,6 +610,7 @@
 				55B5324188ECB56506F07E7F /* FileWatcherTests.swift in Sources */,
 				D7903A3D7EBACB1F90EE595B /* HTMLIntegrationTests.swift in Sources */,
 				6C080D43C8FC01AAA7631170 /* HTMLParserTests.swift in Sources */,
+				925E028CE83196975A541CFD /* MermaidHTMLBuilderTests.swift in Sources */,
 				584BFC5F197ED2BE907AFA18 /* NavigationTests.swift in Sources */,
 				564162A5D6C004A8CF2B781C /* OutlineAndSearchTests.swift in Sources */,
 				39399A96B0AA7F095DC6186E /* ParserTests.swift in Sources */,
@@ -600,7 +618,6 @@
 				3A38D5015978C8F98A211A25 /* SyntaxHighlighterTests.swift in Sources */,
 				A52E186892FE88F05CC07597 /* ThemeFileTests.swift in Sources */,
 				BCEE4CA55D1A7C82C8622864 /* ThemeTests.swift in Sources */,
-				DCC1E080C10E484C99A06840 /* MermaidHTMLBuilderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -613,8 +630,8 @@
 				4887475540EA5E6AC44ECC36 /* BlockFlattener.swift in Sources */,
 				14A2B2A0FED711790417E5A5 /* BlockView.swift in Sources */,
 				48A686A13321B9B7F3DD07B8 /* BuiltinThemes.swift in Sources */,
+				9B2B4C7C377A95FC27AD1001 /* CheckForUpdatesView.swift in Sources */,
 				0720D9CC9E1DDD8344503B0E /* CodeBlockView.swift in Sources */,
-				58139C71022947EBB62A12A0 /* MermaidView.swift in Sources */,
 				1DAB169221180CBC24C04D8E /* ContentView.swift in Sources */,
 				88B7098DBD5DC44912008B73 /* CustomThemeStore.swift in Sources */,
 				A228D5D80F795B8428922323 /* DefaultAppBanner.swift in Sources */,
@@ -635,6 +652,7 @@
 				79C7B2BB3CE0514D536EB05E /* LanguageGrammar.swift in Sources */,
 				C0B00A1EBEC1264437B4AAAD /* LinkResolver.swift in Sources */,
 				76DE860864412EF6666BB2C1 /* MarkdownTableView.swift in Sources */,
+				DA8EA6FECB302E899214048B /* MermaidView.swift in Sources */,
 				261F7796E474C12CFBE6D94E /* Outline.swift in Sources */,
 				CACA681EE28E8F14EDD2ECAC /* OutlineSidebar.swift in Sources */,
 				83A577043810BEE60FA90A78 /* PreviewViewController.swift in Sources */,
@@ -673,9 +691,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Resources/ReadmeLens.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_APP_SANDBOX = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -755,9 +771,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Resources/ReadmeLens.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_APP_SANDBOX = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -954,6 +968,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2748112AF435AD97FBD78FBE /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.6;
+			};
+		};
 		93FAFCF1C2D42EF5AFF79F7B /* XCRemoteSwiftPackageReference "swift-markdown" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-markdown";
@@ -979,6 +1001,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 93FAFCF1C2D42EF5AFF79F7B /* XCRemoteSwiftPackageReference "swift-markdown" */;
 			productName = Markdown;
+		};
+		E64B5B0AF0C8C3669352B2F3 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2748112AF435AD97FBD78FBE /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -55,7 +55,9 @@ properly.
   keeping your position in the document.
 - **Syntax highlighting** for ~20 languages, coloured by the active theme.
 - **Nine themes**, switchable from a single dot in the toolbar.
-- **Private.** No network calls, no analytics, no telemetry.
+- **Private.** No analytics, no telemetry. The only network calls are loading
+  images a document references and a once-daily update check (off switch in
+  Settings ▸ Updates).
 
 ## Settings and custom themes
 
@@ -378,13 +380,30 @@ Sources/
 
 ## Releasing
 
-Releases are cut by pushing a tag. The
-[workflow](.github/workflows/release.yml) builds a universal Release binary,
-zips the `.app`, writes a checksum, and publishes it with generated notes.
+Releases are cut by pushing an annotated tag — its message becomes both the
+GitHub release notes and the "what's new" text Sparkle shows existing users.
+The [workflow](.github/workflows/release.yml) builds a universal Release
+binary, zips the `.app`, writes a checksum, signs the update and regenerates
+`docs/appcast.xml`, and publishes it all with the tag's own notes.
 
 ```bash
-git tag v0.2.0
+git tag -a v0.2.0 -m "ReadmeLens v0.2.0
+
+One line summary.
+
+- what changed"
 git push origin v0.2.0
+```
+
+Update-signing needs a `SPARKLE_PRIVATE_KEY` repository secret — the EdDSA
+private key matching `SUPublicEDKey` in `Resources/Info.plist`. Generate a
+keypair once with Sparkle's `bin/generate_keys` (it's saved to your login
+Keychain), export it with `-x`, and add it as a secret:
+
+```bash
+generate_keys -x sparkle_private_key.txt
+gh secret set SPARKLE_PRIVATE_KEY < sparkle_private_key.txt
+rm sparkle_private_key.txt
 ```
 
 ## FAQ
@@ -396,7 +415,13 @@ ReadmeLens and double-click the file, or select it in Finder and press
 
 **Is it free?**
 Yes — free and open source under the MIT licence. No account, no subscription,
-no telemetry, no network calls except loading images a document references.
+no telemetry. The only network calls are loading images a document references
+and a once-daily check for a new release, which you can turn off in
+Settings ▸ Updates.
+
+**Does it phone home when it checks for updates?**
+No. It asks GitHub Pages for a static `appcast.xml` — no identifiers, no
+analytics, nothing sent about you or your documents.
 
 **Can it preview Markdown in Finder with the Space bar?**
 Yes. A Quick Look extension ships inside the app.

@@ -1,6 +1,10 @@
+import Combine
+import Sparkle
 import SwiftUI
 
 struct SettingsView: View {
+    let updater: SPUUpdater
+
     var body: some View {
         TabView {
             AppearanceSettings()
@@ -9,6 +13,8 @@ struct SettingsView: View {
                 .tabItem { Label("Typography", systemImage: "textformat.size") }
             CustomThemeSettings()
                 .tabItem { Label("Themes", systemImage: "folder") }
+            UpdateSettings(updater: updater)
+                .tabItem { Label("Updates", systemImage: "arrow.down.circle") }
         }
         .frame(width: 480, height: 420)
     }
@@ -247,5 +253,49 @@ private struct CustomThemeList: View {
         } catch {
             exportMessage = "Could not export: \(error.localizedDescription)"
         }
+    }
+}
+
+// MARK: - Updates
+
+private struct UpdateSettings: View {
+    let updater: SPUUpdater
+
+    @State private var automaticallyChecks = false
+    @State private var lastChecked: Date?
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle("Automatically check for updates", isOn: $automaticallyChecks)
+                    .onChange(of: automaticallyChecks) { _, newValue in
+                        updater.automaticallyChecksForUpdates = newValue
+                    }
+            } footer: {
+                Text("ReadmeLens otherwise makes no network calls except loading images a document references.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section {
+                Button("Check for Updates Now") { updater.checkForUpdates() }
+            } footer: {
+                Text(lastChecked.map {
+                    "Last checked \($0.formatted(date: .abbreviated, time: .shortened))."
+                } ?? "Never checked yet.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .formStyle(.grouped)
+        .onAppear {
+            automaticallyChecks = updater.automaticallyChecksForUpdates
+            lastChecked = updater.lastUpdateCheckDate
+        }
+        // The check itself, and the permission prompt on first run, both run
+        // asynchronously — reading these once after calling checkForUpdates()
+        // would just capture the pre-check value.
+        .onReceive(updater.publisher(for: \.lastUpdateCheckDate)) { lastChecked = $0 }
+        .onReceive(updater.publisher(for: \.automaticallyChecksForUpdates)) { automaticallyChecks = $0 }
     }
 }
