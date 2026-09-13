@@ -37,6 +37,8 @@ targets:
       - path: Resources/Assets.xcassets
       - path: Resources/Welcome.md
       - path: Resources/Mermaid
+        type: folder   # a real folder reference, not a flattened group — mermaid.min.js
+                        # must land at Contents/Resources/Mermaid/, not Resources/ directly
     dependencies:
       - package: Markdown
         product: Markdown

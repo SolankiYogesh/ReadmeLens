@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 /// Builds the `AttributedString` for a run of inline text.
@@ -111,9 +112,21 @@ struct StyledText: View {
     @Environment(\.linkResolver) private var links
 
     // Selection is enabled once at the document root, not per run of text:
-    // a document with large tables has thousands of these.
+    // a document with large tables has thousands of these. SwiftUI's `Text`
+    // opens a `.link` run on click but never changes the cursor on hover, and
+    // there is no API for a cursor over just one run inside a paragraph of
+    // otherwise plain prose — but when the *entire* run is one link, which is
+    // most inline links in practice (a TOC entry, a bare reference link), the
+    // whole view can safely get the hand cursor.
+    private var wholeLink: URL? {
+        guard let first = inline.spans.first?.link, !first.isEmpty,
+              inline.spans.allSatisfy({ $0.link == first })
+        else { return nil }
+        return links.resolveLinkURL(first)
+    }
+
     var body: some View {
-        Text(
+        let text = Text(
             InlineAttributedText.build(
                 inline,
                 size: size ?? typography.body,
@@ -125,5 +138,12 @@ struct StyledText: View {
                 current: highlight.currentRange(for: blockID)
             )
         )
+        if wholeLink != nil {
+            text.onHover { isHovering in
+                if isHovering { NSCursor.pointingHand.push() } else { NSCursor.pop() }
+            }
+        } else {
+            text
+        }
     }
 }

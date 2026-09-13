@@ -20,6 +20,7 @@
 		14F3DEE5F2EE0D9DB2107A9F /* FolderAccessStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10672609D88CF0FA95FDB640 /* FolderAccessStore.swift */; };
 		18ECDD591DE04A7A1C370C32 /* ReadmeLensQuickLook.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7A616E6F7F632F8450A89E59 /* ReadmeLensQuickLook.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1C4D6AF51425D22F0470B242 /* DocumentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EF9EBC424858374A46CDE1 /* DocumentModel.swift */; };
+		1CE90A3725A2246CD5813B39 /* Mermaid in Resources */ = {isa = PBXBuildFile; fileRef = C6BC9A3D75330392AEE1D3A3 /* Mermaid */; };
 		1DAB169221180CBC24C04D8E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905CC632DC6C8BE56B18FE1C /* ContentView.swift */; };
 		20B3D0CA9A1B4DEE5864EBF8 /* ViewportModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DA515C0EACFE10A2B7A138C /* ViewportModel.swift */; };
 		231DC0EA113906C8D98BBADD /* HTMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2F07D250039DB2734A8B138 /* HTMLParser.swift */; };
@@ -71,7 +72,6 @@
 		956892F0D7EC7C739F829317 /* HighlightSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1AA870915B2D09D408042A0 /* HighlightSplitter.swift */; };
 		977490F83C486A70E2EF27EB /* DocumentImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91F73CE5C3D1AC1D1CF290E6 /* DocumentImage.swift */; };
 		9B2B4C7C377A95FC27AD1001 /* CheckForUpdatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E4E5B8701640B24E065D1A /* CheckForUpdatesView.swift */; };
-		9D94E281C4D038100D9156A8 /* mermaid.min.js in Resources */ = {isa = PBXBuildFile; fileRef = A07AF7FF7B1F96D382765CD2 /* mermaid.min.js */; };
 		A0C03E011B89B5A09E11C7E3 /* DocumentImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91F73CE5C3D1AC1D1CF290E6 /* DocumentImage.swift */; };
 		A228D5D80F795B8428922323 /* DefaultAppBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426CCD3AEC703E933E581DC4 /* DefaultAppBanner.swift */; };
 		A4495B9E157A59C574F4840E /* ThemeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDB92B3C48041572F10129D0 /* ThemeStore.swift */; };
@@ -180,7 +180,6 @@
 		935E18BE23449FE2B7667A17 /* ReadmeLensApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadmeLensApp.swift; sourceTree = "<group>"; };
 		9E5CD739050A07BA13ECEF79 /* CodeBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeBlockView.swift; sourceTree = "<group>"; };
 		9EBA1ACD234F8612651606AD /* BlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockView.swift; sourceTree = "<group>"; };
-		A07AF7FF7B1F96D382765CD2 /* mermaid.min.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = mermaid.min.js; sourceTree = "<group>"; };
 		A5BE1E7BF0D83503C39E35F1 /* MermaidView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MermaidView.swift; sourceTree = "<group>"; };
 		A6B108BC038F7A9CCB295DD7 /* OutlineSidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlineSidebar.swift; sourceTree = "<group>"; };
 		AFE23720B2152D78F35D3858 /* ThemeFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeFileTests.swift; sourceTree = "<group>"; };
@@ -191,6 +190,7 @@
 		BA92C56E5FEA190EEB211519 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		C05AB63C2D4F75441DF4A423 /* SearchModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchModel.swift; sourceTree = "<group>"; };
 		C08E2DE2AD6A60B2ADDF9A1D /* HTMLNodesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLNodesView.swift; sourceTree = "<group>"; };
+		C6BC9A3D75330392AEE1D3A3 /* Mermaid */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Mermaid; path = Resources/Mermaid; sourceTree = SOURCE_ROOT; };
 		C84C34635C525C5CA9011962 /* RenderBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderBlock.swift; sourceTree = "<group>"; };
 		CA1F72163E6BF04AC25C6476 /* HTMLInlineRun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLInlineRun.swift; sourceTree = "<group>"; };
 		CA75DC9821DC17DC748F1AD4 /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
@@ -339,8 +339,8 @@
 		8EB12652D4508388588397F4 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E506FE7080F4C6C1092C8501 /* Mermaid */,
 				DAD611EDABF5EE906C9DA99D /* Assets.xcassets */,
+				C6BC9A3D75330392AEE1D3A3 /* Mermaid */,
 				710730D0833F7BE1B4AC8E15 /* Welcome.md */,
 			);
 			path = Resources;
@@ -386,14 +386,6 @@
 				78CC108DF4C55E34FBC7674C /* Views */,
 			);
 			path = Sources;
-			sourceTree = "<group>";
-		};
-		E506FE7080F4C6C1092C8501 /* Mermaid */ = {
-			isa = PBXGroup;
-			children = (
-				A07AF7FF7B1F96D382765CD2 /* mermaid.min.js */,
-			);
-			path = Mermaid;
 			sourceTree = "<group>";
 		};
 		F1C07B3166BF526AADDD66AE /* Theme */ = {
@@ -544,8 +536,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8E97755B398338D446FC4120 /* Assets.xcassets in Resources */,
+				1CE90A3725A2246CD5813B39 /* Mermaid in Resources */,
 				03B3980D87AB62AEDFA8CCAC /* Welcome.md in Resources */,
-				9D94E281C4D038100D9156A8 /* mermaid.min.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -51,7 +51,10 @@ struct MermaidView: View {
         let natural = size ?? CGSize(width: typography.contentMaxWidth, height: Self.minHeight)
         let scale = min(1, typography.contentMaxWidth / max(natural.width, 1))
 
-        return MermaidWebView(source: source, theme: theme, onSize: { size = $0 }, onError: { errorMessage = $0 })
+        return MermaidWebView(
+            source: source, theme: theme, initialWidth: typography.contentMaxWidth,
+            onSize: { size = $0 }, onError: { errorMessage = $0 }
+        )
             .frame(width: natural.width, height: natural.height)
             .scaleEffect(scale, anchor: .topLeading)
             .frame(width: natural.width * scale, height: natural.height * scale, alignment: .topLeading)
@@ -98,6 +101,7 @@ final class MermaidCache {
 private struct MermaidWebView: NSViewRepresentable {
     let source: String
     let theme: Theme
+    let initialWidth: CGFloat
     let onSize: (CGSize) -> Void
     let onError: (String) -> Void
 
@@ -106,7 +110,12 @@ private struct MermaidWebView: NSViewRepresentable {
     func makeNSView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.userContentController.add(context.coordinator, name: "mermaid")
-        let webView = WKWebView(frame: .zero, configuration: configuration)
+        // A zero-width viewport at load time sends some diagrams' text-wrap
+        // layout into a hang before SwiftUI's own frame resize lands — long
+        // node labels are what surfaces it. Starting sized avoids the race
+        // entirely rather than depending on resize timing.
+        let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: initialWidth, height: 400), configuration: configuration)
+        webView.navigationDelegate = context.coordinator
         context.coordinator.webView = webView
         return webView
     }
@@ -122,14 +131,25 @@ private struct MermaidWebView: NSViewRepresentable {
         coordinator.loadedSource = source
         coordinator.loadedThemeID = theme.id
 
-        guard let base = Bundle.main.url(forResource: "Mermaid", withExtension: nil) else {
-            onError("Mermaid is missing from the app bundle.")
-            return
+        do {
+            let directory = try MermaidRuntime.prepare()
+            let page = directory.appendingPathComponent("\(coordinator.id).html")
+            try MermaidHTMLBuilder.document(source: source, theme: theme)
+                .write(to: page, atomically: true, encoding: .utf8)
+            // `loadHTMLString(_:baseURL:)` does not reliably grant read access
+            // to sibling resources over file://, so <script src="mermaid.min.js">
+            // can simply never load — and since it blocks the parser, nothing
+            // after it (our own error handling included) ever runs either, so
+            // this hangs silently rather than failing loudly. loadFileURL
+            // grants that access explicitly instead of hoping for it.
+            webView.loadFileURL(page, allowingReadAccessTo: directory)
+        } catch {
+            onError("Couldn't prepare the diagram: \(error.localizedDescription)")
         }
-        webView.loadHTMLString(MermaidHTMLBuilder.document(source: source, theme: theme), baseURL: base)
     }
 
-    final class Coordinator: NSObject, WKScriptMessageHandler {
+    final class Coordinator: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
+        let id = UUID()
         weak var webView: WKWebView?
         var onSize: (CGSize) -> Void = { _ in }
         var onError: (String) -> Void = { _ in }
@@ -158,6 +178,14 @@ private struct MermaidWebView: NSViewRepresentable {
             }
         }
 
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            onError("Page load failed: \(error.localizedDescription)")
+        }
+
+        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+            onError("Page load failed: \(error.localizedDescription)")
+        }
+
         /// Rasterises the freshly-rendered diagram so printing (which cannot
         /// draw a live web view) has something to show.
         private func snapshot(fitting size: CGSize) {
@@ -171,6 +199,33 @@ private struct MermaidWebView: NSViewRepresentable {
                 MermaidCache.shared.store(image, source: capturedSource, themeID: capturedThemeID)
             }
         }
+    }
+}
+
+/// A writable directory holding a copy of the vendored `mermaid.min.js`
+/// alongside each rendered diagram's own HTML page, so `loadFileURL` can
+/// grant read access to both at once — the app bundle itself is read-only.
+private enum MermaidRuntime {
+    private static var prepared: URL?
+
+    static func prepare() throws -> URL {
+        if let prepared { return prepared }
+
+        guard let bundled = Bundle.main.url(forResource: "Mermaid", withExtension: nil)?
+            .appendingPathComponent("mermaid.min.js")
+        else {
+            throw CocoaError(.fileNoSuchFile)
+        }
+
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("Mermaid", isDirectory: true)
+        // Cleared per launch rather than accumulating one HTML file per
+        // diagram ever rendered.
+        try? FileManager.default.removeItem(at: directory)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try FileManager.default.copyItem(at: bundled, to: directory.appendingPathComponent("mermaid.min.js"))
+
+        prepared = directory
+        return directory
     }
 }
 
@@ -214,6 +269,21 @@ enum MermaidHTMLBuilder {
         <body>
         <div id="container"></div>
         <script>
+          function reportError(message) {
+            window.webkit.messageHandlers.mermaid.postMessage({ type: "error", message: String(message) });
+          }
+          window.onerror = (message, source, lineno, colno) => {
+            reportError(message + " (" + lineno + ":" + colno + ")");
+            return true;
+          };
+          window.onunhandledrejection = (event) => {
+            reportError((event.reason && event.reason.message) || event.reason);
+          };
+          // A hang inside mermaid's own layout (seen with long node labels in a
+          // zero-width container before first layout) would otherwise spin the
+          // progress indicator forever with no signal at all.
+          const watchdog = setTimeout(() => reportError("Timed out rendering the diagram."), 8000);
+
           (async () => {
             try {
               mermaid.initialize({
@@ -223,6 +293,7 @@ enum MermaidHTMLBuilder {
                 themeVariables: \(jsObject(variables))
               });
               const { svg } = await mermaid.render("generated-diagram", \(jsString(source)));
+              clearTimeout(watchdog);
               const container = document.getElementById("container");
               container.innerHTML = svg;
               const rect = container.getBoundingClientRect();
@@ -230,9 +301,8 @@ enum MermaidHTMLBuilder {
                 type: "size", width: rect.width, height: rect.height
               });
             } catch (error) {
-              window.webkit.messageHandlers.mermaid.postMessage({
-                type: "error", message: String((error && error.message) || error)
-              });
+              clearTimeout(watchdog);
+              reportError((error && error.message) || error);
             }
           })();
         </script>
