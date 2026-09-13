@@ -41,6 +41,11 @@ jobs:
           git fetch origin "refs/tags/$TAG:refs/tags/$TAG" --force
           echo "tag=$TAG"               >> "$GITHUB_OUTPUT"
           echo "version=${TAG#v}"       >> "$GITHUB_OUTPUT"
+          # Sparkle compares CFBundleVersion, not the marketing string, to
+          # decide whether an appcast entry is newer than what's installed —
+          # it has to actually increase every release, unlike the "1" that
+          # sat in project.yml forever. Commit count is monotonic and cheap.
+          echo "build=$(git rev-list --count "$TAG")" >> "$GITHUB_OUTPUT"
           echo "Building $TAG"
 
       - name: Install XcodeGen
@@ -59,6 +64,7 @@ jobs:
             -destination 'generic/platform=macOS' \
             -derivedDataPath build \
             MARKETING_VERSION="${{ steps.version.outputs.version }}" \
+            CURRENT_PROJECT_VERSION="${{ steps.version.outputs.build }}" \
             build
 
       - name: Verify the bundle is signed
