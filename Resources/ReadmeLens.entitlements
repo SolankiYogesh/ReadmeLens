@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- There's no Developer ID here, so the app and every embedded framework
+       are ad-hoc signed. Hardened Runtime's library validation treats two
+       ad-hoc signatures as never matching, even to each other, which blocks
+       Sparkle.framework from loading at launch without this. -->
+  <key>com.apple.security.cs.disable-library-validation</key>
+  <true/>
+</dict>
+</plist>
