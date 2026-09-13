@@ -73,6 +73,37 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         true
     }
 
+    /// Right- (or Control-) clicking the Dock icon: recently opened documents,
+    /// newest first, backed by the same list `noteNewRecentDocumentURL` feeds
+    /// for File ▸ Open Recent.
+    @MainActor
+    func applicationDockMenu(_ sender: NSApplication) -> NSMenu? {
+        let recents = NSDocumentController.shared.recentDocumentURLs
+            .filter { FileManager.default.fileExists(atPath: $0.path) }
+        guard !recents.isEmpty else { return nil }
+
+        let menu = NSMenu()
+        for url in recents {
+            let item = NSMenuItem(
+                title: url.lastPathComponent,
+                action: #selector(openRecentDocument(_:)),
+                keyEquivalent: ""
+            )
+            item.target = self
+            item.representedObject = url
+            item.image = NSWorkspace.shared.icon(forFile: url.path)
+            menu.addItem(item)
+        }
+        return menu
+    }
+
+    @MainActor
+    @objc private func openRecentDocument(_ sender: NSMenuItem) {
+        guard let url = sender.representedObject as? URL else { return }
+        Self.document?.open(url)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
     @objc(print:)
     func printDocument(_ sender: Any?) {
         Task { @MainActor in Self.printHandler?() }

@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import Markdown
 
@@ -205,6 +206,10 @@ final class DocumentModel: ObservableObject {
             needsFolderAccess = hasLocalReferences && !canRead(folder)
             needsAccessToOpen = false
             startWatching()
+            // Feeds File ▸ Open Recent and the Dock icon's right-click menu —
+            // the standard hook for apps that manage opening themselves
+            // rather than through the full NSDocument architecture.
+            NSDocumentController.shared.noteNewRecentDocumentURL(url)
         } catch {
             self.url = url
             self.baseDirectory = folder
