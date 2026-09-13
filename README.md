@@ -383,8 +383,9 @@ Sources/
 Releases are cut by pushing an annotated tag — its message becomes both the
 GitHub release notes and the "what's new" text Sparkle shows existing users.
 The [workflow](.github/workflows/release.yml) builds a universal Release
-binary, zips the `.app`, writes a checksum, signs the update and regenerates
-`docs/appcast.xml`, and publishes it all with the tag's own notes.
+binary, zips the `.app`, writes a checksum, signs the update, and publishes
+the appcast to the [site repo](https://github.com/ReadmeLens/readmelens.github.io)
+at `readmelens.github.io/appcast.xml` — the address baked into `SUFeedURL`.
 
 ```bash
 git tag -a v0.2.0 -m "ReadmeLens v0.2.0
@@ -395,16 +396,27 @@ One line summary.
 git push origin v0.2.0
 ```
 
-Update-signing needs a `SPARKLE_PRIVATE_KEY` repository secret — the EdDSA
-private key matching `SUPublicEDKey` in `Resources/Info.plist`. Generate a
-keypair once with Sparkle's `bin/generate_keys` (it's saved to your login
-Keychain), export it with `-x`, and add it as a secret:
+Two repository secrets make that last part work:
 
-```bash
-generate_keys -x sparkle_private_key.txt
-gh secret set SPARKLE_PRIVATE_KEY < sparkle_private_key.txt
-rm sparkle_private_key.txt
-```
+- `SPARKLE_PRIVATE_KEY` — the EdDSA private key matching `SUPublicEDKey` in
+  `Resources/Info.plist`. Generate a keypair once with Sparkle's
+  `bin/generate_keys` (it's saved to your login Keychain), export it with
+  `-x`, and add it as a secret:
+
+  ```bash
+  generate_keys -x sparkle_private_key.txt
+  gh secret set SPARKLE_PRIVATE_KEY < sparkle_private_key.txt
+  rm sparkle_private_key.txt
+  ```
+
+- `SITE_REPO_TOKEN` — a token with write access to the separate
+  `ReadmeLens/readmelens.github.io` repo, since a `GITHUB_TOKEN` only reaches
+  the repo the workflow runs in. Create a fine-grained personal access token
+  scoped to just that repo (Contents: Read and write), then:
+
+  ```bash
+  gh secret set SITE_REPO_TOKEN --repo SolankiYogesh/ReadmeLens
+  ```
 
 ## FAQ
 

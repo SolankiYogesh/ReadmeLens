@@ -16,6 +16,10 @@ on:
 
 env:
   SPARKLE_VERSION: "2.9.6"
+  # readmelens.github.io is its own repo, in the ReadmeLens org — not this
+  # repo's own (unused) GitHub Pages. The appcast and its release notes are
+  # published there, matching the SUFeedURL baked into Info.plist.
+  SITE_REPO: ReadmeLens/readmelens.github.io
 
 permissions:
   contents: write        # needed to create the release
@@ -117,6 +121,16 @@ jobs:
       # Everything below feeds Sparkle: existing users see this as the
       # in-app "what's new" text and get pointed at the asset just
       # published above.
+      - name: Fetch the site repo
+        env:
+          SITE_REPO_TOKEN: ${{ secrets.SITE_REPO_TOKEN }}
+        run: |
+          if [ -z "$SITE_REPO_TOKEN" ]; then
+            echo "::error::SITE_REPO_TOKEN secret is not set — see README ▸ Releasing"
+            exit 1
+          fi
+          git clone --depth 1 "https://x-access-token:${SITE_REPO_TOKEN}@github.com/${SITE_REPO}.git" site_repo
+
       - name: Write appcast release notes
         run: |
           ZIP="${{ steps.package.outputs.zip }}"
@@ -124,7 +138,10 @@ jobs:
           mkdir -p appcast_build
           git tag -l --format='%(contents)' "${{ steps.version.outputs.tag }}" > "$NOTES"
           cp "${{ steps.package.outputs.zip }}" appcast_build/
-          test -f docs/appcast.xml && cp docs/appcast.xml appcast_build/ || true
+          # generate_appcast merges into whatever appcast.xml is already
+          # here, so it needs the one currently live on the site, not the
+          # one this repo happened to have last time.
+          test -f site_repo/appcast.xml && cp site_repo/appcast.xml appcast_build/ || true
 
       - name: Install Sparkle tools
         run: |
@@ -149,23 +166,16 @@ jobs:
             appcast_build
 
       - name: Publish the appcast
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          # A separate, clean clone of just main — the job's own checkout is
-          # sitting on the tag and has build artifacts and a regenerated
-          # project.pbxproj lying around, neither of which belong here.
-          git clone --depth 1 --branch main \
-            "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" \
-            appcast_repo
-          cp appcast_build/appcast.xml appcast_repo/docs/appcast.xml
-          cd appcast_repo
+          cp appcast_build/appcast.xml "site_repo/appcast.xml"
+          cp appcast_build/*.md "site_repo/"
+          cd site_repo
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/appcast.xml
+          git add appcast.xml "*.md"
           if git diff --cached --quiet; then
             echo "appcast unchanged"
           else
-            git commit -m "Update appcast for ${{ steps.version.outputs.tag }}"
+            git commit -m "Publish appcast for ${{ steps.version.outputs.tag }}"
             git push origin HEAD:main
           fi
